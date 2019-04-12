@@ -190,7 +190,7 @@ function createServer( oOptions )
  *
  * 	@public
  * 	@param	{object}	oOptions
- * 	@param	{string}	oOptions.minerGateway			e.g. : wss://1.miner.trustnote.org
+ * 	@param	{string}	oOptions.minerGateway			e.g. : wss://1.miner.ringnetwork.org
  * 	@param	{function}	oOptions.onOpen( err, oWsClient )
  * 	@param	{function}	oOptions.onMessage( oWsClient, sMessage )
  * 	@param	{function}	oOptions.onError( oWsClient, vError )

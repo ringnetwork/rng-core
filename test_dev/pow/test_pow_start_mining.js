@@ -9,7 +9,7 @@ process.env.ENV_UNIT_TEST	= true;
  */
 const _pow			= require( '../../pow/pow.js' );
 const _event_bus		= require( '../../base/event_bus.js' );
-const _trustnote_pow_miner	= require( 'trustnote-pow-miner' );
+const _rng_miner	= require( 'rng-miner' );
 
 
 //
@@ -19,7 +19,7 @@ const _trustnote_pow_miner	= require( 'trustnote-pow-miner' );
 // *	@param	{string}	oInput.publicSeed
 // *	@param	{string}	oInput.superNodeAuthor
 //
-let nDifficulty		= _trustnote_pow_miner.getBitsByTarget( "0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" );
+let nDifficulty		= _rng_miner.getBitsByTarget( "0fffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff" );
 let nMiningTimes	= 0;
 
 
@@ -48,7 +48,7 @@ function mining()
 			firstTrustMEBall	: 'rjywtuZ8A70vgIsZ7L4lBR3gz62Nl3vZr2t7I4lzsMU=',
 			bits			: nDifficulty,
 			publicSeed		: 'public key',
-			superNodeAuthor		: 'xing.supernode.trustnote.org',
+			superNodeAuthor		: 'xing.supernode.ringnetwork.org',
 		},
 		function( err, oData )
 		{

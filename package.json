@@ -1,21 +1,21 @@
 {
-	"name": "trustnote-pow-common",
-	"description": "Trustnote pow Common",
-	"author": "TrustnotePow",
+	"name": "rng-core",
+	"description": "RingNetwork pow core",
+	"author": "RingNetworkPow",
 	"version": "1.0.0",
 	"keywords": [
-		"trustnote",
+		"ringnetwork",
 		"pow",
 		"multisignature"
 	],
-	"homepage": "https://github.com/trustnote/trustnote-pow-common",
+	"homepage": "https://github.com/ringnetwork/rng-core",
 	"license": "MIT",
 	"repository": {
-		"url": "https://github.com/trustnote/trustnote-pow-common.git",
+		"url": "https://github.com/ringnetwork/rng-core.git",
 		"type": "git"
 	},
 	"bugs": {
-		"url": "https://github.com/trustnote/trustnote-pow-common/issues"
+		"url": "https://github.com/ringnetwork/rng-core/issues"
 	},
 	"browser": {
 		"request": "browser-request",
@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"async": "^1.5.2",
-		"blakejs": "git+https://github.com/trustnote/blakejs.git",
+		"blakejs": "git+https://github.com/ringnetwork/blakejs.git",
 		"deutils.js": ">=1.0.0",
 		"event-stream": "^4.0.0",
 		"jshint": "^2.9.6",
@@ -35,7 +35,7 @@
 		"socks": "1.1.10",
 		"sqlite3": "^3.1.4",
 		"thirty-two": "^1.0.1",
-		"trustnote-pow-gossiper": "git+https://github.com/trustnote/trustnote-pow-gossiper.git",
+		"rng-gossiper": "git+https://github.com/ringnetwork/rng-gossiper.git",
 		"bitcore-lib": "^0.13.14",
 		"bitcore-mnemonic": "~1.0.0",
 		"ws": "^1.0.1"

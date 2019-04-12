@@ -25,7 +25,7 @@ function parseUri( uri, callbacks )
 	}
 
 
-	var protocol = conf.program || 'trustnote';
+	var protocol = conf.program || 'ringnetwork';
 	var re = new RegExp('^'+protocol+':(.+)$', 'i');
 	var arrMatches = uri.match(re);
 	if (!arrMatches){

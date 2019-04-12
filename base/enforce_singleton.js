@@ -1,7 +1,7 @@
 /*jslint node: true */
 "use strict";
 
-if (global._bTrustnoteCoreLoaded)
-	throw Error("Looks like you are loading multiple copies of trustnote-common, which is not supported.\nRunnung 'npm dedupe' might help.");
+if (global._bRingNetworkCoreLoaded)
+	throw Error("Looks like you are loading multiple copies of rng-core, which is not supported.\nRunnung 'npm dedupe' might help.");
 
-global._bTrustnoteCoreLoaded = true;
+global._bRingNetworkCoreLoaded = true;

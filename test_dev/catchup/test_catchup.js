@@ -2,7 +2,7 @@ const WebSocket		= process.browser ? global.WebSocket : require( 'ws' );
 const _network		= require( '../../p2p/network.js' );
 
 
-const _peer	= 'ws://dev.mainchain.pow.trustnote.org:9191';
+const _peer	= 'ws://dev.mainchain.pow.ringnetwork.org:9191';
 const _JsonMsg	= [
 			"request",
 			{

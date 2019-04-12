@@ -4,10 +4,10 @@
 const _db			= require( '../db/db.js' );
 const _conf			= require( '../config/conf' );
 
-const { Gossiper: Gossiper }	= require( 'trustnote-pow-gossiper' );
-const { GossiperMessages }	= require( 'trustnote-pow-gossiper' );
-const { GossiperEvents }	= require( 'trustnote-pow-gossiper' );
-const { GossiperUtils }		= require( 'trustnote-pow-gossiper' );
+const { Gossiper: Gossiper }	= require( 'rng-gossiper' );
+const { GossiperMessages }	= require( 'rng-gossiper' );
+const { GossiperEvents }	= require( 'rng-gossiper' );
+const { GossiperUtils }		= require( 'rng-gossiper' );
 const { DeUtilsCore }		= require( 'deutils.js' );
 const { DeUtilsNetwork }	= require( 'deutils.js' );
 

@@ -1,1 +1,1 @@
-# Trustnote Common Library with POW supported
+# RingNetwork core Library with POW supported

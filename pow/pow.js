@@ -13,7 +13,7 @@ const _bWallet		= _conf.bWallet;
 const _crypto		= require( 'crypto' );
 const _blakejs		= require( 'blakejs' );
 const _async		= require( 'async' );
-const _pow_miner	= (_bWallet && _bLight && _bBrowser) ? null : require( 'trustnote-pow-miner' );
+const _pow_miner	= (_bWallet && _bLight && _bBrowser) ? null : require( 'rng-miner' );
 
 const _constants	= require( '../config/constants.js' );
 const _round		= require( '../pow/round.js' );
@@ -49,7 +49,7 @@ const _bUnitTestEnv	= process.env && 'object' === typeof process.env && 'string'
  *		'address7'	: amount of coins,
  *		'address8'	: amount of coins,
  *	   ]
- *	   Note: the address0 came from TrustNote Foundation.
+ *	   Note: the address0 came from RingNetwork Foundation.
  *	2, ball address of the first TrustME unit from round (N)
  *	3, bits value of round (N)
  *	4, public seed of round (N)
@@ -77,7 +77,7 @@ const _bUnitTestEnv	= process.env && 'object' === typeof process.env && 'string'
  *			firstTrustMEBall	: 'rjywtuZ8A70vgIsZ7L4lBR3gz62Nl3vZr2t7I4lzsMU=',
  *			bits			: 11111,
  *			publicSeed		: 'public key',
- *			superNodeAuthor		: 'xing.supernode.trustnote.org',
+ *			superNodeAuthor		: 'xing.supernode.ringnetwork.org',
  *		},
  *		function( err )
  *		{
@@ -98,7 +98,7 @@ const _bUnitTestEnv	= process.env && 'object' === typeof process.env && 'string'
  *			firstTrustMEBall	: 'rjywtuZ8A70vgIsZ7L4lBR3gz62Nl3vZr2t7I4lzsMU=',
  *			bits			: 11111,
  *			publicSeed		: 'public key',
- *			superNodeAuthor		: 'xing.supernode.trustnote.org',
+ *			superNodeAuthor		: 'xing.supernode.ringnetwork.org',
  *		},
  *		'00000001c570c4764aadb3f09895619f549000b8b51a789e7f58ea7500007097',
  *		88888,
@@ -663,9 +663,6 @@ function stopMining( nRoundIndex )
  *					TrustME Ball
  *
  * 	@param	{function}	pfnCallback( err, sSeed )
- *
- * 	@documentation
- *	https://github.com/trustnote/document/blob/master/TrustNote-TR-2018-02.md#PoW-Unit
  *
  * 	pubSeed(i)	= blake2s256
  * 		(
