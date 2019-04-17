@@ -23,7 +23,7 @@
 	},
 	"dependencies": {
 		"async": "^1.5.2",
-		"blakejs": "git+https://github.com/ringnetwork/blakejs.git",
+		"blakejs": "git+https://github.com/ringnetwork/blakejs.git#master",
 		"deutils.js": ">=1.0.0",
 		"event-stream": "^4.0.0",
 		"jshint": "^2.9.6",
@@ -35,7 +35,7 @@
 		"socks": "1.1.10",
 		"sqlite3": "^3.1.4",
 		"thirty-two": "^1.0.1",
-		"rng-gossiper": "git+https://github.com/ringnetwork/rng-gossiper.git",
+		"rng-gossiper": "git+https://github.com/ringnetwork/rng-gossiper.git#master",
 		"bitcore-lib": "^0.13.14",
 		"bitcore-mnemonic": "~1.0.0",
 		"ws": "^1.0.1"
