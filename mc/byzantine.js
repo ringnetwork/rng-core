@@ -175,13 +175,13 @@ function startPhase(hp, phase){
     hp = parseInt(hp);
     phase = parseInt(phase);
     if(!validationUtils.isValidAddress(address_p)){
-        console.log("byllllogg startPhase address_p not known yet");
+        // console.log("byllllogg startPhase address_p not known yet");
 		setTimeout(function(){
 			startPhase(hp, phase);
 		}, 1000);
 		return;    
     }
-    console.log("byllllogg startPhase, h_p:" + h_p + ", p_p:" + p_p + ", hp:" + hp + ", phase:" + phase);
+    // console.log("byllllogg startPhase, h_p:" + h_p + ", p_p:" + p_p + ", hp:" + hp + ", phase:" + phase);
     if(h_p > hp)
         return;
     else if(h_p === hp && p_p >= phase)
@@ -190,15 +190,15 @@ function startPhase(hp, phase){
     waitingProposer = "";
     getCoordinators(null, hp, phase, function(err, proposer, roundIndex, witnesses){
         if(err){
-            console.log("byllllogg get coordinators err:" + err);
+            // console.log("byllllogg get coordinators err:" + err);
             return;
         }
         if(witnesses.length !== constants.TOTAL_COORDINATORS){
-            console.log("byllllogg coordinators count err:" + witnesses.length );
+            // console.log("byllllogg coordinators count err:" + witnesses.length );
             return;
         }
         if(witnesses.indexOf(address_p) === -1){
-            console.log("byllllogg i am not the coordinators of round:" + roundIndex);
+            // console.log("byllllogg i am not the coordinators of round:" + roundIndex);
             return;
         }
         if(!validationUtils.isValidAddress(proposer))
@@ -287,7 +287,7 @@ function startPhase(hp, phase){
                         var proposal = convertJointToProposal(objJoint, validPhase_p, 1);
                         validation.validateProposalJoint(proposal, {
                             ifInvalid: function(err){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, 0, function(err){
                                     if(err)
                                         throw Error("push valid byzantine proposal error:" + err);
@@ -300,7 +300,7 @@ function startPhase(hp, phase){
                                 });
                             },
                             ifNeedWaiting: function(err){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, -1, function(err){
                                     if(err)
                                         throw Error("push valid byzantine proposal error:" + err);
@@ -313,7 +313,7 @@ function startPhase(hp, phase){
                                 });
                             },
                             ifOk: function(){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifOk:" +hp + phase  );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifOk:" +hp + phase  );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, 1, function(err){
                                     if(err)
                                         throw Error("push valid byzantine proposal error:" + err);
@@ -337,7 +337,7 @@ function startPhase(hp, phase){
                         var proposal = convertJointToProposal(objJoint, validPhase_p, 1);
                         validation.validateProposalJoint(proposal, {
                             ifInvalid: function(err){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, 0, function(err){
                                     if(err)
                                         throw Error("push valid byzantine proposal error:" + err);
@@ -350,7 +350,7 @@ function startPhase(hp, phase){
                                 });
                             },
                             ifNeedWaiting: function(err){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifInvalid:" + hp + phase + err );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, -1, function(err){
                                     if(err)
                                         throw Error("push valid byzantine proposal error:" + err);
@@ -363,11 +363,11 @@ function startPhase(hp, phase){
                                 });
                             },
                             ifOk: function(){
-                                console.log("byllllogg BYZANTINE_PROPOSE startPhase ifOk:" +hp + phase  );
+                                // console.log("byllllogg BYZANTINE_PROPOSE startPhase ifOk:" +hp + phase  );
                                 pushByzantineProposal(hp, phase, proposal, validPhase_p, 1, function(err){
                                     if(err)
                                         throw Error("push new byzantine proposal error:" + err);
-                                    console.log("byllllogg BYZANTINE_PROPOSE startPhase before broadcast:" +hp + phase  );
+                                    // console.log("byllllogg BYZANTINE_PROPOSE startPhase before broadcast:" +hp + phase  );
                                     broadcastProposal(hp, phase, assocByzantinePhase[hp].phase[phase].proposal, validPhase_p);
                                     pushByzantinePrevote(hp, phase, assocByzantinePhase[hp].phase[phase].proposal.idv, address_p, 1);
                                     broadcastPrevote(hp, phase, assocByzantinePhase[hp].phase[phase].proposal.idv);
@@ -386,7 +386,7 @@ function startPhase(hp, phase){
             h_propose_timeout = hp;
             p_propose_timeout = phase;
             var timeout = getTimeout(phase);
-            console.log("byllllogg timeout setTimeout OnTimeoutPropose hp:" + hp + " --- phase:" + phase + " --- step_p:" + step_p + " --- timeout:" + timeout);
+            // console.log("byllllogg timeout setTimeout OnTimeoutPropose hp:" + hp + " --- phase:" + phase + " --- step_p:" + step_p + " --- timeout:" + timeout);
             clearTimeout(timeout_propose);
             timeout_propose = setTimeout(OnTimeoutPropose, timeout);
             handleByzantine();
@@ -400,36 +400,36 @@ function startPhase(hp, phase){
 eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
     if(!conf.IF_BYZANTINE)
         return;
-    console.log("byllllogg " + h_p + "-" + p_p + " gossip sKey:" + sKey + " --- sPeerUrl:" + sPeerUrl 
-        + " --- gossipMessage:" + JSON.stringify(gossipMessage));
+    // console.log("byllllogg " + h_p + "-" + p_p + " gossip sKey:" + sKey + " --- sPeerUrl:" + sPeerUrl 
+        // + " --- gossipMessage:" + JSON.stringify(gossipMessage));
     if(maxGossipHp < gossipMessage.h) { // update max gossip h
         // console.log("byllllogg maxGossipHp < gossipMessage.h:" + maxGossipHp + gossipMessage.h);
         maxGossipHp = gossipMessage.h;
         maxGossipPp = gossipMessage.p;
     }
     if(gossipMessage.h < h_p){
-        console.log("byllllogg gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
+        // console.log("byllllogg gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
         return;
     }
     if(!validationUtils.isValidAddress(address_p)){
-        console.log("byllllogg isValidAddress:" + address_p);
+        // console.log("byllllogg isValidAddress:" + address_p);
         return;    
     }
    
     getCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
         if(err){
-            console.log("byllllogg get coordinators err:" + err);
+            // console.log("byllllogg get coordinators err:" + err);
             return;
         }
         if(witnesses.length !== constants.TOTAL_COORDINATORS){
-            console.log("byllllogg coordinators count err:" + witnesses.length );
+            // console.log("byllllogg coordinators count err:" + witnesses.length );
             return;
         }
         if(witnesses.indexOf(address_p) === -1)
             return;
         handleGossipMessage(sKey, gossipMessage, function(err){
             if(err){
-                console.log("handle gossip message err:" + err);
+                // console.log("handle gossip message err:" + err);
                 return;
             }
             if(bByzantineUnderWay)
@@ -447,7 +447,7 @@ eventBus.on('mci_became_stable', function(mci){
      validPhase_p  = -1;
      waitingProposer = "";
      // start new h_p
-     console.log("byllllogg startPhase mci_became_stable:" + h_p + ":" + p_p);
+    //  console.log("byllllogg startPhase mci_became_stable:" + h_p + ":" + p_p);
      startPhase(mci+1, 0);
 });
 
@@ -456,10 +456,10 @@ eventBus.on('mci_became_stable', function(mci){
 //         broadcast <PREVOTE,hp,roundp,nil>
 //         stepp ← prevote
 function OnTimeoutPropose(){
-    console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose1:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ":" + step_p);
+    // console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose1:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ":" + step_p);
     if(h_propose_timeout === h_p && p_propose_timeout === p_p && step_p === constants.BYZANTINE_PROPOSE){
         pushByzantinePrevote(h_propose_timeout, p_propose_timeout, null, address_p, 0);
-        console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose2:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ": null");
+        // console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose2:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ": null");
         broadcastPrevote(h_propose_timeout, p_propose_timeout, null);
         step_p = constants.BYZANTINE_PREVOTE;
     }
@@ -488,7 +488,7 @@ function OnTimeoutPropose(){
 //         stepp ← precommit
 function OnTimeoutPrevote(){
     if(h_prevote_timeout === h_p && p_prevote_timeout === p_p && step_p === constants.BYZANTINE_PREVOTE){
-        console.log("byllllogg broadcastPrecommit timeout OnTimeoutPrevote:" + h_p + ":" + p_p + ":" + h_prevote_timeout + ":" + p_prevote_timeout + ": null");
+        // console.log("byllllogg broadcastPrecommit timeout OnTimeoutPrevote:" + h_p + ":" + p_p + ":" + h_prevote_timeout + ":" + p_prevote_timeout + ": null");
         pushByzantinePrecommit(h_prevote_timeout, p_prevote_timeout, null, address_p, null, 0);
         broadcastPrecommit(h_prevote_timeout, p_prevote_timeout, null, null);
         step_p = constants.BYZANTINE_PRECOMMIT;
@@ -516,9 +516,9 @@ function OnTimeoutPrevote(){
 //     if height=hp ∧ round=roundp then
 //         StartRound(roundp+1)
 function OnTimeoutPrecommit(){
-    console.log("byllllogg timeout startPhase OnTimeoutPrecommit 1:" + h_p + ":" + p_p + ":" + h_precommit_timeout + ":" + p_precommit_timeout);
+    // console.log("byllllogg timeout startPhase OnTimeoutPrecommit 1:" + h_p + ":" + p_p + ":" + h_precommit_timeout + ":" + p_precommit_timeout);
     if(h_precommit_timeout === h_p && p_precommit_timeout === p_p){
-        console.log("byllllogg timeout startPhase OnTimeoutPrecommit 2:" + h_p + ":" + p_p + ":" + h_precommit_timeout + ":" + p_precommit_timeout);
+        // console.log("byllllogg timeout startPhase OnTimeoutPrecommit 2:" + h_p + ":" + p_p + ":" + h_precommit_timeout + ":" + p_precommit_timeout);
         startPhase(h_precommit_timeout, p_precommit_timeout+1);
     }
     h_precommit_timeout = -1;
@@ -547,7 +547,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                     Object.keys(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].proposal).length === 0 ){
                 validation.validateProposalJoint(gossipMessage.v, {
                     ifInvalid: function(err){
-                        console.log("byllllogg BYZANTINE_PROPOSE gossip ifInvalid:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address + err);
+                        // console.log("byllllogg BYZANTINE_PROPOSE gossip ifInvalid:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address + err);
                         pushByzantineProposal(gossipMessage.h, gossipMessage.p, gossipMessage.v, gossipMessage.vp, 0, function(err){
                             // console.log("byllllogg push new byzantine proposal from Invalid gossip:" + err);
                             handleTempGossipMessage(gossipMessage.h, gossipMessage.p);
@@ -555,7 +555,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                         });
                     },
                     ifNeedWaiting: function(err){
-                        console.log("byllllogg BYZANTINE_PROPOSE gossip ifNeedWaiting:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address + err);
+                        // console.log("byllllogg BYZANTINE_PROPOSE gossip ifNeedWaiting:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address + err);
                         pushByzantineProposal(gossipMessage.h, gossipMessage.p, gossipMessage.v, gossipMessage.vp, -1, function(err){
                             // console.log("byllllogg push new byzantine proposal from NeedWaiting gossip:" + err);
                             handleTempGossipMessage(gossipMessage.h, gossipMessage.p);
@@ -563,7 +563,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                         });
                     },
                     ifOk: function(){
-                        console.log("byllllogg BYZANTINE_PROPOSE gossip ifOk:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
+                        // console.log("byllllogg BYZANTINE_PROPOSE gossip ifOk:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                         // if its a new proposal, reset params.
                         if(gossipMessage.vp === -1){
                             lockedValue_p = null;
@@ -581,7 +581,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
             }
             break;
         case constants.BYZANTINE_PREVOTE: 
-            console.log("byllllogg BYZANTINE_PREVOTE gossip sKey 1:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
+            // console.log("byllllogg BYZANTINE_PREVOTE gossip sKey 1:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
             // if gossipMessage.idv is null, then don't need proposal
             if(gossipMessage.idv !== null && (!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].proposal.idv 
                 || typeof assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].proposal.idv === 'undefined')){
@@ -597,7 +597,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
             return callback();           
             break;
         case constants.BYZANTINE_PRECOMMIT:
-            console.log("byllllogg BYZANTINE_PRECOMMIT gossip sKey 1:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
+            // console.log("byllllogg BYZANTINE_PRECOMMIT gossip sKey 1:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
             if(gossipMessage.idv !==null && (!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].proposal.idv 
                 || typeof assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].proposal.idv === 'undefined')){
                 // The gossip message cannot be handled for the time being
@@ -655,12 +655,12 @@ function handleByzantine(){
             if(assocByzantinePhase[h_p].phase[p_p].proposal.isValid === 1 
                 && (lockedPhase_p === -1 || compareIfValueEqual(lockedValue_p, assocByzantinePhase[h_p].phase[p_p].proposal))){
                 pushByzantinePrevote(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv, address_p, 1);
-                console.log("byllllogg broadcastPrevote 1:" + h_p + ":" + p_p + ":" + assocByzantinePhase[h_p].phase[p_p].proposal.idv);
+                // console.log("byllllogg broadcastPrevote 1:" + h_p + ":" + p_p + ":" + assocByzantinePhase[h_p].phase[p_p].proposal.idv);
                 broadcastPrevote(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv);
             }
             else {
                 pushByzantinePrevote(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv, address_p, 0);
-                console.log("byllllogg broadcastPrevote 2:" + h_p + ":" + p_p + ": null");
+                // console.log("byllllogg broadcastPrevote 2:" + h_p + ":" + p_p + ": null");
                 broadcastPrevote(h_p, p_p, null);
             }
             step_p = constants.BYZANTINE_PREVOTE;
@@ -677,12 +677,12 @@ function handleByzantine(){
             if(assocByzantinePhase[h_p].phase[p_p].proposal.isValid === 1 
                 && (lockedPhase_p <= assocByzantinePhase[h_p].phase[p_p].proposal.vp || compareIfValueEqual(lockedValue_p, assocByzantinePhase[h_p].phase[p_p].proposal))){
                 pushByzantinePrevote(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv, address_p, 1);
-                console.log("byllllogg broadcastPrevote 3:" + h_p + ":" + p_p + ":" + assocByzantinePhase[h_p].phase[p_p].proposal.idv);
+                // console.log("byllllogg broadcastPrevote 3:" + h_p + ":" + p_p + ":" + assocByzantinePhase[h_p].phase[p_p].proposal.idv);
                 broadcastPrevote(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv);
             }
             else {
                 pushByzantinePrevote(h_p, p_p, null, address_p, 0);
-                console.log("byllllogg broadcastPrevote 4:" + h_p + ":" + p_p + ": null");
+                // console.log("byllllogg broadcastPrevote 4:" + h_p + ":" + p_p + ": null");
                 broadcastPrevote(h_p, p_p, null);
             }
             step_p = constants.BYZANTINE_PREVOTE;
@@ -695,7 +695,7 @@ function handleByzantine(){
                 h_prevote_timeout = h_p;
                 p_prevote_timeout = p_p;
                 var timeout = getTimeout(p_p);
-                console.log("byllllogg timeout setTimeout OnTimeoutPrevote h_p:" + h_p + " --- p_p:" + p_p + " --- step_p:" + step_p + " --- timeout:" + timeout);
+                // console.log("byllllogg timeout setTimeout OnTimeoutPrevote h_p:" + h_p + " --- p_p:" + p_p + " --- step_p:" + step_p + " --- timeout:" + timeout);
                 clearTimeout(timeout_prevote);
                 timeout_prevote = setTimeout(OnTimeoutPrevote, timeout);
             }
@@ -714,7 +714,7 @@ function handleByzantine(){
             if(step_p === constants.BYZANTINE_PREVOTE){
                 lockedValue_p = _.cloneDeep(assocByzantinePhase[h_p].phase[p_p].proposal);
                 lockedPhase_p = p_p;
-                console.log("byllllogg broadcastPrecommit PrevoteBiggerThan2f1:" + h_p + ":" + p_p + ":" +assocByzantinePhase[h_p].phase[p_p].proposal.idv);
+                // console.log("byllllogg broadcastPrecommit PrevoteBiggerThan2f1:" + h_p + ":" + p_p + ":" +assocByzantinePhase[h_p].phase[p_p].proposal.idv);
                 pushByzantinePrecommit(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.idv, address_p, assocByzantinePhase[h_p].phase[p_p].proposal.sig, 1);
                 broadcastPrecommit(h_p, p_p, assocByzantinePhase[h_p].phase[p_p].proposal.sig, assocByzantinePhase[h_p].phase[p_p].proposal.idv);
                 step_p = constants.BYZANTINE_PRECOMMIT;
@@ -726,7 +726,7 @@ function handleByzantine(){
         //     broadcast <PRECOMMIT,hp,roundp,nil>
         //     step p ← precommit
         if(PrevoteBiggerThan2f1(h_p, p_p, 0) && step_p === constants.BYZANTINE_PREVOTE){
-            console.log("byllllogg broadcastPrecommit PrevoteBiggerThan2f1:" + h_p + ":" + p_p + ": null");
+            // console.log("byllllogg broadcastPrecommit PrevoteBiggerThan2f1:" + h_p + ":" + p_p + ": null");
             pushByzantinePrecommit(h_p, p_p, null, address_p, null, 0);
             broadcastPrecommit(h_p, p_p, null, null);
             step_p = constants.BYZANTINE_PRECOMMIT;
@@ -738,7 +738,7 @@ function handleByzantine(){
                 h_precommit_timeout = h_p;
                 p_precommit_timeout = p_p;
                 var timeout = getTimeout(p_p);
-                console.log("byllllogg timeout setTimeout OnTimeoutPrecommit h_p:" + h_p + " --- p_p:" + p_p + " --- step_p:" + step_p + " --- timeout:" + timeout);
+                // console.log("byllllogg timeout setTimeout OnTimeoutPrecommit h_p:" + h_p + " --- p_p:" + p_p + " --- step_p:" + step_p + " --- timeout:" + timeout);
                 clearTimeout(timeout_precommit);
                 timeout_precommit = setTimeout(OnTimeoutPrecommit, timeout);
             }
@@ -758,8 +758,8 @@ function handleByzantine(){
     //     console.log("byllllogg onDecisionDone" + " --- h_p:" + h_p + " --- p_p:" + p_p);
     // }
 
-    console.log("byllllogl " + h_p + "-" + p_p + " --- step_p:" 
-    + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p);
+    // console.log("byllllogl " + h_p + "-" + p_p + " --- step_p:" 
+    // + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p);
 
     if(assocByzantinePhase[h_p].decision === null || Object.keys(assocByzantinePhase[h_p].decision).length === 0){
         Object.keys(assocByzantinePhase[h_p].phase).forEach(function(current_p){
@@ -794,13 +794,13 @@ function handleByzantine(){
             if(current_p > p_p){
                 if(assocByzantinePhase[h_p].phase[current_p].received_addresses &&
                     assocByzantinePhase[h_p].phase[current_p].received_addresses.length > 0){
-                    console.log("byllllogg byzantine startPhase received_addresses:" + JSON.stringify(assocByzantinePhase[h_p].phase[current_p].received_addresses)+"---waitingProposer:"+waitingProposer);
+                    // console.log("byllllogg byzantine startPhase received_addresses:" + JSON.stringify(assocByzantinePhase[h_p].phase[current_p].received_addresses)+"---waitingProposer:"+waitingProposer);
                     if(assocByzantinePhase[h_p].phase[current_p].received_addresses.length >= constants.TOTAL_BYZANTINE + 1){
-                        console.log("byllllogg byzantine startPhase received_addresses" + h_p + ":" + p_p);
+                        // console.log("byllllogg byzantine startPhase received_addresses" + h_p + ":" + p_p);
                         startPhase(h_p, current_p);
                     }
                     else if (waitingProposer !== "" && assocByzantinePhase[h_p].phase[current_p].received_addresses.indexOf(waitingProposer) !== -1){
-                        console.log("byllllogg byzantine startPhase waitingProposer" + h_p + ":" + p_p);
+                        // console.log("byllllogg byzantine startPhase waitingProposer" + h_p + ":" + p_p);
                         // reset validValue_p and validPhase_p, the previous Byzantine was abolished
                         validValue_p  = null;
                         validPhase_p  = -1;
@@ -836,14 +836,14 @@ function composePrecommitMessage(hp, pp, sig, idv){
             "idv": idv};
 }
 function broadcastProposal(h, p, value, vp){
-    console.log("byllllogg bylllloggbyllllogg in broadcastProposal:" + h + ":" + p + ":" + JSON.stringify(value) + ":" + vp);
+    // console.log("byllllogg bylllloggbyllllogg in broadcastProposal:" + h + ":" + p + ":" + JSON.stringify(value) + ":" + vp);
     gossiper.gossiperBroadcast("proposal", composeProposalMessage(h, p, value, vp), function(err){
         if(err)
             return console.log("byllllogg broadcastProposal err:" + err);
     });
 }
 function broadcastPrevote(h, p, idv){
-    console.log("byllllogg bylllloggbyllllogg in broadcastPrevote:" + h + ":" + p + ":" + JSON.stringify(idv));
+    // console.log("byllllogg bylllloggbyllllogg in broadcastPrevote:" + h + ":" + p + ":" + JSON.stringify(idv));
     last_prevote_gossip = composePrevoteMessage(h, p, idv);
     gossiper.gossiperBroadcast("prevote", last_prevote_gossip, function(err){
         if(err)
@@ -851,7 +851,7 @@ function broadcastPrevote(h, p, idv){
     });
 }
 function broadcastPrecommit(h, p, sig, idv){
-    console.log("byllllogg bylllloggbyllllogg in broadcastPrecommit:" + h + ":" + p + ":" + JSON.stringify(idv));
+    // console.log("byllllogg bylllloggbyllllogg in broadcastPrecommit:" + h + ":" + p + ":" + JSON.stringify(idv));
     last_precommit_gossip = composePrecommitMessage(h, p, sig, idv);
     gossiper.gossiperBroadcast("precommit", last_precommit_gossip, function(err){
         if(err)
@@ -1079,7 +1079,7 @@ function decisionTrustMe(proposal, approvedCoordinators) {
 }
 
 function doStartPhase(hp, phase){
-    console.log("byllllog startPhase onDecisionError:" + hp + ":" + phase);
+    // console.log("byllllog startPhase onDecisionError:" + hp + ":" + phase);
     startPhase(hp, phase);          
 }
 
