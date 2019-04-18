@@ -1912,17 +1912,18 @@ function validatePaymentInputsAndOutputs(conn, payload, objAsset, message_index,
 											// console.log("===================got last coin base round is : "+ lastCoinBaseRound);
 											round.getCurrentRoundIndex(conn, function(latestRoundIndex){
 												if (constants.FOUNDATION_SAFE_ADDRESS === coAuthorAddr){ // foundation spend deposit condition
-													if(!isInvalid) // supernode is good condition
-														return cb("supernode [" + supernodeinfo[0].address + "] don not submit bad joints, Foundation can not spend its deposit balance ");
-													if(lastCoinBaseRound === 0 ) // never participate in minning and no coinbase  record
-														return cb("supernode [" + supernodeinfo[0].address + "] don not submit coinbase unit,  Foundation can not spend its deposit balance ");
+													return cb("Foundation safe address is burned, can not spend deposit contract balance before ")
+													// if(!isInvalid) // supernode is good condition
+													// 	return cb("supernode [" + supernodeinfo[0].address + "] don not submit bad joints, Foundation can not spend its deposit balance ");
+													// if(lastCoinBaseRound === 0 ) // never participate in minning and no coinbase  record
+													// 	return cb("supernode [" + supernodeinfo[0].address + "] don not submit coinbase unit,  Foundation can not spend its deposit balance ");
 													
-													// console.log("===================got current  round is : "+ latestRoundIndex);
-													// check if delay n round to spend 
-													if((latestRoundIndex - lastCoinBaseRound) < constants.COUNT_ROUNDS_FOR_FOUNDATION_SPEND_DEPOSIT){
-														return cb("Foundation safe address can not spend deposit contract balance before ")
-													}
-													return cb(); // OK condition
+													// // console.log("===================got current  round is : "+ latestRoundIndex);
+													// // check if delay n round to spend 
+													// if((latestRoundIndex - lastCoinBaseRound) < constants.COUNT_ROUNDS_FOR_FOUNDATION_SPEND_DEPOSIT){
+													// 	return cb("Foundation safe address can not spend deposit contract balance before ")
+													// }
+													// return cb(); // OK condition
 												}
 												else if(coAuthorAddr === supernodeinfo[0].safe_address){ // condition for supernode spend the deposit balance
 													if(lastCoinBaseRound === 0 ) // not mine at all, take it anytime

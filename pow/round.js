@@ -608,16 +608,11 @@ function getAllCoinbaseRatioByRoundIndex(conn, roundIndex, callback){
                     witnesses.forEach(function(witness){
                         witnessRatioOfTrustMe[witness]=0;
                     });
-                    // var addressTrustMeWl = {};
+                    
                     for (var i=0; i<rows.length; i++){
                         var row = rows[i];
                         if(witnesses.indexOf(row.address) === -1)
                             throw Error("wrong trustme unit exit ");
-                        // if(row.address === constants.FOUNDATION_ADDRESS)  // except foundation supernode
-                        //     continue;
-                        //if(addressTrustMeWl[row.address] != null && row.witnessed_level - addressTrustMeWl[row.address] <= constants.MIN_INTERVAL_WL_OF_TRUSTME)
-                        //    continue;          
-                        //addressTrustMeWl[row.address] = row.witnessed_level;                  
                         
                         totalCountOfTrustMe++;
                         witnessRatioOfTrustMe[row.address]++;
@@ -637,8 +632,6 @@ function getAllCoinbaseRatioByRoundIndex(conn, roundIndex, callback){
 }
 
 function getCoinbaseRatioByRoundIndexAndAddress(conn, roundIndex, witnessAddress, callback){
-    // if(witnessAddress === constants.FOUNDATION_ADDRESS)  // foundation supernode return 0
-    //     return callback(0);
     getAllCoinbaseRatioByRoundIndex(conn, roundIndex, function(witnessRatioOfTrustMe){
         if(witnessRatioOfTrustMe === null || typeof witnessRatioOfTrustMe ===  'undefined')
             throw Error("witnessRatioOfTrustMe is null " + JSON.stringify(witnessRatioOfTrustMe));
