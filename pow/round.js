@@ -147,7 +147,6 @@ function getCurrentRoundInfo(conn, callback){
 
 function getRoundInfoByRoundIndex(conn, roundIndex, callback){
     if (assocCachedRoundInfo[roundIndex]){
-        console.log("use cache getRoundInfoByRoundIndex: " + roundIndex);
         return callback(assocCachedRoundInfo[roundIndex].round_index, assocCachedRoundInfo[roundIndex].min_wl, assocCachedRoundInfo[roundIndex].seed);
     }
     var conn = conn || db;
@@ -295,7 +294,6 @@ function getMinWlByRoundIndex(conn, roundIndex, callback){
 
 function getWitnessesByRoundIndex(conn, roundIndex, callback){
     if (assocCachedWitnesses[roundIndex]){
-        console.log("RoundCacheLog:use:getWitnessesByRoundIndex->assocCachedWitnesses,roundIndex:" + roundIndex);
         return callback(assocCachedWitnesses[roundIndex]);
     }
     var witnesses  = [];
@@ -317,8 +315,7 @@ function getWitnessesByRoundIndex(conn, roundIndex, callback){
 			if (rows.length !==  constants.TOTAL_COORDINATORS)
                 throw Error("Can not find enough witnesses of round" + roundIndex);
             witnesses = rows.map(function(row) { return row.address; } );
-            // witnesses.push(constants.FOUNDATION_ADDRESS);
-            console.log("RoundCacheLog:push:getWitnessesByRoundIndex->assocCachedWitnesses,roundIndex:" + roundIndex);
+            
             assocCachedWitnesses[roundIndex] = witnesses;
             callback(witnesses);
 		}
@@ -455,11 +452,6 @@ function getTotalCoinByRoundIndex(conn, roundIndex, cb){
                 var depositRatio = Math.round((depositBalance*100)/totalPublishCoin);
                 
                 var inflationRatio = arrInflationRatio[depositRatio];
-                console.log("coinbasecalcute round_index:" + roundIndex +
-                            ", totalMine:" + totalMine + ", totalCommission:" + totalCommission + ", totalBurn:" + totalBurn + 
-                            ", totalPublishCoin:" + totalPublishCoin +  ", depositBalance:" + depositBalance +
-                            ", depositRatio:" + depositRatio + ", inflationRatio:" + inflationRatio +
-                            ", totalcoin:" + Math.floor((inflationRatio*totalPublishCoin)/constants.ROUND_TOTAL_YEAR));
                 cb(Math.floor((inflationRatio*totalPublishCoin)/constants.ROUND_TOTAL_YEAR));
             });  
         }
@@ -480,7 +472,6 @@ function getMaxMciByRoundIndex(conn, roundIndex, callback){
     if(roundIndex === 0)
         return callback(0);
     if (assocCachedMaxMci[roundIndex]){
-        console.log("RoundCacheLog:use:getMaxMciByRoundIndex->assocCachedMaxMci,roundIndex:" + roundIndex);
         return callback(assocCachedMaxMci[roundIndex]);
     }
     conn.query(
@@ -490,7 +481,6 @@ function getMaxMciByRoundIndex(conn, roundIndex, callback){
         function(rows){
             if (rows.length !== 1)
                 throw Error("Can not find max mci ");
-            console.log("RoundCacheLog:push:getMaxMciByRoundIndex->assocCachedMaxMci,roundIndex:" + roundIndex);
             assocCachedMaxMci[roundIndex] = rows[0].max_mci;
             callback(rows[0].max_mci);
         }
@@ -599,7 +589,6 @@ function getAllCoinbaseRatioByRoundIndex(conn, roundIndex, callback){
     if(roundIndex <= 0) 
         throw Error("The first round have no coinbase ");
     if (assocCachedCoinbaseRatio[roundIndex]){
-        console.log("RoundCacheLog:use:getAllCoinbaseRatioByRoundIndex->assocCachedCoinbaseRatio,roundIndex:" + roundIndex);
         return callback(assocCachedCoinbaseRatio[roundIndex]);
     }
     getMinWlByRoundIndex(conn, roundIndex+1, function(minWl){
@@ -638,7 +627,6 @@ function getAllCoinbaseRatioByRoundIndex(conn, roundIndex, callback){
                         witnessRatioOfTrustMe[address] = witnessRatioOfTrustMe[address]/totalCountOfTrustMe;
                     });
                     if (!assocCachedCoinbaseRatio[roundIndex]){
-                        console.log("RoundCacheLog:push:getAllCoinbaseRatioByRoundIndex->assocCachedCoinbaseRatio,roundIndex:" + roundIndex);
                         assocCachedCoinbaseRatio[roundIndex] = witnessRatioOfTrustMe;
                     }
                     callback(witnessRatioOfTrustMe);
@@ -793,15 +781,12 @@ function getLastCoinbaseUnitRoundIndex(conn, address, cb){
 
 // cache begin
 function shrinkRoundCacheObj(roundIndex, arrIndex, assocCachedObj){
-    console.log("shrink Round Cache , begin roundIndex:" + roundIndex);
     var minIndex = Math.min.apply(Math, arrIndex);
     if(roundIndex - minIndex > 10000){
-        console.log("shrink Round Cache, remove all");
         assocCachedObj = {};
     }
     else{
         for (var offset = minIndex; offset < roundIndex - MAX_ROUND_IN_CACHE; offset++){
-            console.log("shrink Round Cache, remove roundIndex:" + offset);
             delete assocCachedObj[offset];
         }
     }
@@ -814,11 +799,6 @@ function shrinkRoundCache(){
     var arrRoundInfo = Object.keys(assocCachedRoundInfo);
     if (arrWitnesses.length < MAX_ROUND_IN_CACHE && arrTotalCommission.length < MAX_ROUND_IN_CACHE && 
         arrMaxMci.length < MAX_ROUND_IN_CACHE && arrCoinbaseRatio.length < MAX_ROUND_IN_CACHE){
-        console.log("shrink Round Cache, arrWitnesses.length:" + arrWitnesses.length +
-                ",arrTotalCommission.length:" + arrTotalCommission.length +
-                ",arrMaxMci.length:" + arrMaxMci.length +
-                ",arrCoinbaseRatio.length:" + arrCoinbaseRatio.length +
-                ",arrRoundInfo.length:" + arrRoundInfo.length);
         return console.log('round cache is small, will not shrink');
     }
 	getCurrentRoundIndex(db, function(roundIndex){
@@ -877,19 +857,3 @@ exports.getLastCoinbaseUnitRoundIndex	= getLastCoinbaseUnitRoundIndex;
 exports.getStatisticsByRoundIndex	= getStatisticsByRoundIndex;
 
 
-// var roundIndex =1;
-
-// setInterval(shrinkRoundCache, 10*1000);
-
-// function addshrinkRoundCache(){
-//     assocCachedWitnesses[roundIndex] = roundIndex;
-//     console.log("add assocCachedWitnesses       : " + JSON.stringify(assocCachedWitnesses));
-//     assocCachedTotalCommission[roundIndex] = roundIndex;
-//     console.log("add assocCachedTotalCommission : " + JSON.stringify(assocCachedTotalCommission));
-//     assocCachedMaxMci[roundIndex] = roundIndex;
-//     console.log("add assocCachedMaxMci          : " + JSON.stringify(assocCachedMaxMci));
-//     assocCachedCoinbaseRatio[roundIndex] = roundIndex;
-//     console.log("add assocCachedCoinbaseRatio   : " + JSON.stringify(assocCachedCoinbaseRatio));
-//     roundIndex++;
-// }
-// setInterval(addshrinkRoundCache, 1*1000);
