@@ -1155,7 +1155,7 @@ function shrinkByzantineCache(){
     // }
 }
 
-setInterval(shrinkByzantineCache, 100*1000);
+setInterval(shrinkByzantineCache, 12*1000);
 
 // cache end
 
