@@ -400,8 +400,8 @@ function startPhase(hp, phase){
 eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
     if(!conf.IF_BYZANTINE)
         return;
-    // console.log("byllllogg " + h_p + "-" + p_p + " gossip sKey:" + sKey + " --- sPeerUrl:" + sPeerUrl 
-        // + " --- gossipMessage:" + JSON.stringify(gossipMessage));
+     console.log("byllllogg " + h_p + "-" + p_p + " gossip sKey:" + sKey + " --- sPeerUrl:" + sPeerUrl 
+         + " --- gossipMessage:" + JSON.stringify(gossipMessage));
     if(maxGossipHp < gossipMessage.h) { // update max gossip h
         // console.log("byllllogg maxGossipHp < gossipMessage.h:" + maxGossipHp + gossipMessage.h);
         maxGossipHp = gossipMessage.h;
