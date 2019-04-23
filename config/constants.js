@@ -122,5 +122,8 @@ exports.PAYLOAD_COEFFICIENT = {
 };
 
 
+// deposit reward 
+// exports.DEPOSIT_REWARD_ROUND = 576;
+exports.DEPOSIT_REWARD_PERIOD = 5;
 
 

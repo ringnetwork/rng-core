@@ -104,6 +104,17 @@ function markMcIndexStable(conn, mci, onDone){
 										);
 									});			
 								},
+								function(cb1){    // update max mci
+									round.getMaxMciByRoundIndex( conn, round_index, function(maxMci){
+										conn.query(
+											"UPDATE round SET max_mci=? WHERE round_index=?", 
+											[maxMci, round_index], 
+											function(){
+												cb1();
+											}
+										);
+									});			
+								},
 								function(cb1){    // calculate difficulty
 									if(round.getCycleIdByRoundIndex(round_index+1) === round.getCycleIdByRoundIndex(round_index))
 										return cb1();

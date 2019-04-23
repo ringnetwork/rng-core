@@ -322,6 +322,20 @@ function getWitnessesByRoundIndex(conn, roundIndex, callback){
 	);
 }
 
+function getRoundIndexByMci(conn, mci, callback){
+    if(!validationUtils.isPositiveInteger(mci))
+        throw Error("param mci is not a positive integer");
+    if(mci <= 1)
+        return callback(0);
+    conn.query("SELECT MIN(round_index) AS round_index FROM round  WHERE max_mci>? ",  
+        [mci],
+        function(rows){
+            if (rows.length !== 1)
+                return callback(0); 
+            callback(rows[0].round_index);
+        });
+}
+
 function getRoundIndexByNewMci(conn, mci, callback){
     if(!validationUtils.isPositiveInteger(mci))
         throw Error("param mci is not a positive integer");
@@ -831,6 +845,7 @@ exports.getRoundInfoByRoundIndex = getRoundInfoByRoundIndex;
 exports.removeAssocCachedRoundInfo = removeAssocCachedRoundInfo;
 
 exports.getWitnessesByRoundIndex = getWitnessesByRoundIndex;
+exports.getRoundIndexByMci = getRoundIndexByMci;
 exports.getRoundIndexByNewMci = getRoundIndexByNewMci;
 exports.checkIfCoinBaseUnitByRoundIndexAndAddressExists = checkIfCoinBaseUnitByRoundIndexAndAddressExists;
 exports.checkIfPowUnitByRoundIndexAndAddressExists = checkIfPowUnitByRoundIndexAndAddressExists;
