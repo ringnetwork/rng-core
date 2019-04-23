@@ -12,6 +12,19 @@ var async = require('async');
 
 var constants = require('../config/constants.js');
 
+
+/**
+ * Returns max round index of a reward period.
+ */
+function getRewardPeriod(roundIndex){
+    if(!validationUtils.isPositiveInteger(roundIndex))
+        return 0;
+    if(roundIndex <= constants.DEPOSIT_REWARD_PERIOD)
+        return 1;
+    return Math.ceil(roundIndex/constants.DEPOSIT_REWARD_PERIOD);
+}
+
+
 /**
  * Returns max round index of a reward period.
  */
@@ -72,7 +85,7 @@ function getCoinRewardRatio(conn, rewardPeriod, callback){
                             return cb();
                         if(maxRound - round_index < constants.DEPOSIT_REWARD_PERIOD)
                             return cb();
-                        var coinAge = Math.floor(maxRound - round_index/constants.DEPOSIT_REWARD_PERIOD);
+                        var coinAge = Math.floor((maxRound - round_index)/constants.DEPOSIT_REWARD_PERIOD);
                         var coinReward = coinAge * Math.floor(row.amount/1000000)
                         totalCoin += coinReward;
                         totalCoinAgeResult.push({"address":row.address, "coinAge": coinAge, 
@@ -93,6 +106,8 @@ function getCoinRewardRatio(conn, rewardPeriod, callback){
     );
 }
 
+
+exports.getRewardPeriod = getRewardPeriod;
 exports.getMaxRoundOfReward = getMaxRoundOfReward;
 exports.getTotalRewardByPeriod = getTotalRewardByPeriod;
 exports.getCoinRewardRatio = getCoinRewardRatio;
