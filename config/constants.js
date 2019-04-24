@@ -123,7 +123,11 @@ exports.PAYLOAD_COEFFICIENT = {
 
 
 // deposit reward 
-// exports.DEPOSIT_REWARD_ROUND = 576;
+// the reward is calculated on how many rounds
+// exports.DEPOSIT_REWARD_ROUND = 576;   
 exports.DEPOSIT_REWARD_PERIOD = 5;
+// how many deposit addresses get rewards
+//exports.DEPOSIT_REWARD_RESTRICTION = 1000;
+exports.DEPOSIT_REWARD_RESTRICTION = 5;
 
 

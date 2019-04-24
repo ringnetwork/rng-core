@@ -4,12 +4,14 @@ var _ = require('lodash');
 var async = require('async');
 var db = require('../db/db.js');
 var constants = require("../config/constants.js");
+var conf = require('../config/conf.js');
 var storage = require('../db/storage.js');
 var graph = require('../mc/graph.js');
 var objectHash = require("../base/object_hash.js");
 var eventBus = require('../base/event_bus.js');
 var pow = require('../pow/pow.js');
 var round = require('../pow/round.js');
+var depositReward = require('../sc/deposit_reward.js');
 
 
 function updateUnitsStable(conn, last_trustme_unit, last_mci, onDone){
@@ -143,6 +145,35 @@ function markMcIndexStable(conn, mci, onDone){
 										);
 									});
 								},
+								function(cb1){
+									if(!conf.bCalculateReward || !conf.bLight)
+										return cb1();
+									if(round_index <= constants.DEPOSIT_REWARD_PERIOD)
+										return cb1();
+									if((round_index-1)%constants.DEPOSIT_REWARD_PERIOD !== 0)
+										return cb1();
+									var rewardPeriod = depositReward.getRewardPeriod(round_index-1);
+									depositReward.getCoinRewardRatio(conn, rewardPeriod, function(err, totalCoinAgeResult){
+										if(err)
+											return cb1();
+										async.eachSeries(
+											totalCoinAgeResult, 
+											function(coinResult, cb2){
+												conn.query(
+													"INSERT INTO coin_reward (reward_period, address, coin_age, coin_amount, coin_reward, coin_ratio)  \n\
+													 VALUES (?, ?, ?, ?, ?, ?)", 
+													[rewardPeriod, coinResult.address, coinResult.coinAge, coinResult.coinAmount, coinResult.coinReward, coinResult.CoinRewardRatio], 
+													function(){
+														cb2();
+													}
+												);
+											}, 
+											function(){
+												cb1();
+											}
+										);										
+									});
+								}
 							], 
 							function(err){
 								round.forwardRound(round_index+1);
