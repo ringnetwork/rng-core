@@ -33,7 +33,7 @@
 		"ref": "^1.3.5",
 		"secp256k1": "^3.5.2",
 		"socks": "1.1.10",
-		"sqlite3": "^3.1.4",
+		"sqlite3": "^4.0.0",
 		"thirty-two": "^1.0.1",
 		"rng-gossiper": "git+https://github.com/ringnetwork/rng-gossiper.git#master",
 		"bitcore-lib": "^0.13.14",
