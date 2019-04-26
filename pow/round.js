@@ -166,6 +166,42 @@ function removeAssocCachedRoundInfo(roundIndex){
     delete assocCachedRoundInfo[roundIndex];
 }
 
+// function getDurationByCycleId(conn, cycleId, callback){
+//     if(cycleId <= constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION) 
+//         throw Error("The first " + constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION + " cycles do not need to calculate duration");
+//     var minRoundIndex = getMinRoundIndexByCycleId(cycleId-constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION);
+//     var maxRoundIndex = getMaxRoundIndexByCycleId(cycleId-1)-1;
+//     if(maxRoundIndex - minRoundIndex + 1 != constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION*constants.COUNT_ROUNDS_FOR_DIFFICULTY_SWITCH-1) 
+//         throw Error("calculate duration error on minRoundIndex or maxRoundIndex");    
+//     conn.query(
+//         "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) \n\
+//         WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+//             AND sequence='good' AND is_stable=1 AND round_index>=? ORDER BY main_chain_index LIMIT 1",
+//         [constants.POW_TYPE_TRUSTME, minRoundIndex],
+//         function(rowsMin){
+//             if (rowsMin.length !== 1)
+//                 return callback(0);
+//             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
+//                 return callback(0);
+//             conn.query(
+//                 "SELECT int_value AS max_timestamp FROM data_feeds JOIN units USING(unit) \n\
+//                 WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+//                     AND sequence='good' AND is_stable=1 AND round_index<=? ORDER BY main_chain_index DESC LIMIT 1",
+//                 [constants.POW_TYPE_TRUSTME, maxRoundIndex],
+//                 function(rowsMax){
+//                     if (rowsMax.length !== 1)
+//                         return callback(0);
+//                     if (rowsMax[0].max_timestamp === null || isNaN(rowsMax[0].max_timestamp))
+//                         return callback(0);
+
+//                     callback(Math.floor((rowsMax[0].max_timestamp - rowsMin[0].min_timestamp)/1000));
+//                 }
+//             );            
+//         }
+//     );
+// }
+
+
 function getDurationByCycleId(conn, cycleId, callback){
     if(cycleId <= constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION) 
         throw Error("The first " + constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION + " cycles do not need to calculate duration");
@@ -174,20 +210,20 @@ function getDurationByCycleId(conn, cycleId, callback){
     if(maxRoundIndex - minRoundIndex + 1 != constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION*constants.COUNT_ROUNDS_FOR_DIFFICULTY_SWITCH-1) 
         throw Error("calculate duration error on minRoundIndex or maxRoundIndex");    
     conn.query(
-        "SELECT int_value AS min_timestamp FROM data_feeds CROSS JOIN units USING(unit) CROSS JOIN unit_authors USING(unit) \n\
-        WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
-            AND sequence='good' AND is_stable=1 AND round_index>=? ORDER BY main_chain_index LIMIT 1",
-        [constants.POW_TYPE_TRUSTME, minRoundIndex],
+        "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+        WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+            AND sequence='good' AND is_stable=1 ",
+        [minRoundIndex-1, constants.POW_TYPE_TRUSTME],
         function(rowsMin){
             if (rowsMin.length !== 1)
                 return callback(0);
             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
                 return callback(0);
             conn.query(
-                "SELECT int_value AS max_timestamp FROM data_feeds CROSS JOIN units USING(unit) CROSS JOIN unit_authors USING(unit) \n\
-                WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
-                    AND sequence='good' AND is_stable=1 AND round_index<=? ORDER BY main_chain_index DESC LIMIT 1",
-                [constants.POW_TYPE_TRUSTME, maxRoundIndex],
+                "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+                WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+                    AND sequence='good' AND is_stable=1 ",
+                [maxRoundIndex, constants.POW_TYPE_TRUSTME],
                 function(rowsMax){
                     if (rowsMax.length !== 1)
                         return callback(0);
@@ -200,6 +236,40 @@ function getDurationByCycleId(conn, cycleId, callback){
         }
     );
 }
+
+// function getDurationByRoundIndex(conn, roundIndex, callback){
+//     if(!validationUtils.isPositiveInteger(roundIndex))
+//         return callback(0);
+//     if(roundIndex > constants.ROUND_TOTAL_ALL) 
+//         return callback(0);
+    
+//     conn.query(
+//         "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) \n\
+//         WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+//             AND sequence='good' AND is_stable=1 AND round_index=? ORDER BY main_chain_index DESC LIMIT 1",
+//         [constants.POW_TYPE_TRUSTME, roundIndex-1],
+//         function(rowsMin){
+//             if (rowsMin.length !== 1)
+//                 return callback(0);
+//             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
+//                 return callback(0);
+//             conn.query(
+//                 "SELECT int_value AS max_timestamp FROM data_feeds JOIN units USING(unit)  \n\
+//                 WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+//                     AND sequence='good' AND is_stable=1 AND round_index=? ORDER BY main_chain_index DESC LIMIT 1",
+//                 [constants.POW_TYPE_TRUSTME, roundIndex],
+//                 function(rowsMax){
+//                     if (rowsMax.length !== 1)
+//                         return callback(0);
+//                     if (rowsMax[0].max_timestamp === null || isNaN(rowsMax[0].max_timestamp))
+//                         return callback(0);
+
+//                     callback(Math.floor((rowsMax[0].max_timestamp - rowsMin[0].min_timestamp)/1000));
+//                 }
+//             );            
+//         }
+//     );
+// }
 
 function getDurationByRoundIndex(conn, roundIndex, callback){
     if(!validationUtils.isPositiveInteger(roundIndex))
@@ -208,20 +278,20 @@ function getDurationByRoundIndex(conn, roundIndex, callback){
         return callback(0);
     
     conn.query(
-        "SELECT int_value AS min_timestamp FROM data_feeds CROSS JOIN units USING(unit) CROSS JOIN unit_authors USING(unit) \n\
-        WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
-            AND sequence='good' AND is_stable=1 AND round_index=? ORDER BY main_chain_index DESC LIMIT 1",
-        [constants.POW_TYPE_TRUSTME, roundIndex-1],
+        "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+        WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+            AND sequence='good' AND is_stable=1 ",
+        [roundIndex-1, constants.POW_TYPE_TRUSTME],
         function(rowsMin){
             if (rowsMin.length !== 1)
                 return callback(0);
             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
                 return callback(0);
             conn.query(
-                "SELECT int_value AS max_timestamp FROM data_feeds CROSS JOIN units USING(unit) CROSS JOIN unit_authors USING(unit) \n\
-                WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
-                    AND sequence='good' AND is_stable=1 AND round_index=? ORDER BY main_chain_index DESC LIMIT 1",
-                [constants.POW_TYPE_TRUSTME, roundIndex],
+                "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+                WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+                    AND sequence='good' AND is_stable=1 ",
+                [roundIndex, constants.POW_TYPE_TRUSTME],
                 function(rowsMax){
                     if (rowsMax.length !== 1)
                         return callback(0);
@@ -235,14 +305,13 @@ function getDurationByRoundIndex(conn, roundIndex, callback){
     );
 }
 
-
 function getLastTimestampByRoundIndex(roundIndex, callback){
     if(!validationUtils.isPositiveInteger(roundIndex))
         return callback(-1);
     if(roundIndex > constants.ROUND_TOTAL_ALL) 
         return callback(-1);
     db.query(
-        "SELECT int_value AS max_timestamp FROM data_feeds CROSS JOIN units USING(unit) CROSS JOIN unit_authors USING(unit) \n\
+        "SELECT int_value AS max_timestamp FROM data_feeds JOIN units USING(unit) JOIN unit_authors USING(unit) \n\
         WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
             AND sequence='good' AND is_stable=1 AND round_index=? ORDER BY main_chain_index DESC LIMIT 1",
         [constants.POW_TYPE_TRUSTME, roundIndex],

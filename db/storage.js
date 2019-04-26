@@ -841,11 +841,11 @@ function readLastMainChainIndex(handleLastMcIndex){
 	});
 }
 
-function readTimestampOfLastMci(conn, handleTimestamp){
+function readTimestampOfLastMci(conn, mci, handleTimestamp){
 	conn.query("SELECT int_value AS timestamp FROM data_feeds JOIN units USING(unit) \n\
-		WHERE feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
-		AND sequence='good' AND is_stable=1 ORDER BY main_chain_index DESC LIMIT 1", 
-		[constants.POW_TYPE_TRUSTME],
+	WHERE main_chain_index=? AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
+	AND sequence='good' AND is_stable=1 ", 
+		[mci, constants.POW_TYPE_TRUSTME],
 		function(rows){
 			if(rows.length === 0)   // first trustme unit
 				return handleTimestamp(0);

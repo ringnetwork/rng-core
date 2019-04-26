@@ -601,7 +601,7 @@ function validateAuthors(conn, arrAuthors, objUnit, objValidationState, callback
 	objValidationState.unit_hash_to_sign = objectHash.getUnitHashToSign(objUnit);
 	//pow add: check trust me author must come from pow unit authors of last round
 	if(objUnit.pow_type === constants.POW_TYPE_TRUSTME){
-		storage.readTimestampOfLastMci(conn, function(lastTimestamp){
+		storage.readTimestampOfLastMci(conn, objUnit.hp-1, function(lastTimestamp){
 				if(lastTimestamp === null)
 					return callback("error occured when get Timestamp of last mci");
 				lastTimestamp = parseInt(lastTimestamp);
