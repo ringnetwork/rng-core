@@ -146,7 +146,7 @@ function markMcIndexStable(conn, mci, onDone){
 									});
 								},
 								function(cb1){
-									if(!conf.bCalculateReward || !conf.bLight)
+									if(!conf.bCalculateReward || conf.bLight)
 										return cb1();
 									if(round_index <= constants.DEPOSIT_REWARD_PERIOD)
 										return cb1();

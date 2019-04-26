@@ -1121,7 +1121,8 @@ function consoleLog(){
     + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
 }
 
-setInterval(consoleLog, 10*1000);
+if(conf.IF_BYZANTINE)
+    setInterval(consoleLog, 10*1000);
 
 // Send the last message end
 
