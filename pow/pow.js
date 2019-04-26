@@ -506,7 +506,8 @@ function startMiningWithInputs( oInput, pfnCallback )
 		}
 
 		//	...
-		_event_bus.emit( 'pow_mined_gift', err, objSolution );
+		if(!err)
+			_event_bus.emit( 'pow_mined_gift', err, objSolution );
 
 	});
 
