@@ -74,7 +74,7 @@ function markMcIndexStable(conn, mci, onDone){
 								"UPDATE round SET min_wl=? WHERE round_index=?", 
 								[rowTrustME[0].witnessed_level, round_index], 
 								function(){			
-									round.removeAssocCachedRoundInfo(round_index);						
+									round.updateAssocCachedRoundMinWl(rowTrustME[0].witnessed_level);						
 									eventBus.emit("launch_pow", round_index);									
 									cb();
 								}
@@ -96,14 +96,16 @@ function markMcIndexStable(conn, mci, onDone){
 									pow.calculatePublicSeedByRoundIndex( conn, round_index+1, function(err, newSeed){
 										if(err)
 											throw Error(" calculate new seed error !");
-										conn.query(
-											"INSERT INTO round (round_index, min_wl, seed, total_mine, total_commission, total_burn)  \n\
-											VALUES (?, null, ?, 0, 0, 0)", 
-											[round_index+1, newSeed], 
-											function(){
-												cb1();
-											}
-										);
+										round.getRoundMineByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn, totalDeposit, roundMine){
+											conn.query(
+												"INSERT INTO round (round_index, min_wl, seed, total_mine, total_commission, total_burn, total_deposit, round_mine)  \n\
+												VALUES (?, null, ?, ?, ?, ?, ?, ?)", 
+												[round_index+1, newSeed, totalMine, totalCommission, totalBurn, totalDeposit, roundMine], 
+												function(){
+													cb1();
+												}
+											);
+										});
 									});			
 								},
 								function(cb1){    // update max mci
@@ -128,18 +130,6 @@ function markMcIndexStable(conn, mci, onDone){
 											[round.getCycleIdByRoundIndex(round_index+1), nBits], 
 											function(){
 												infoMiningSuccess(round_index+1, nBits);
-												cb1();
-											}
-										);
-									});
-								},
-								function(cb1){    // calculate total mine and commission and burn
-									round.getTotalMineAndCommissionByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn){
-										conn.query(
-											"UPDATE round set total_mine=?, total_commission=?, total_burn=?  \n\
-											where round_index=?", 
-											[totalMine, totalCommission, totalBurn, round_index], 
-											function(){
 												cb1();
 											}
 										);

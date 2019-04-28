@@ -147,7 +147,9 @@ function getCurrentRoundInfo(conn, callback){
 
 function getRoundInfoByRoundIndex(conn, roundIndex, callback){
     if (assocCachedRoundInfo[roundIndex]){
-        return callback(assocCachedRoundInfo[roundIndex].round_index, assocCachedRoundInfo[roundIndex].min_wl, assocCachedRoundInfo[roundIndex].seed);
+        return callback(assocCachedRoundInfo[roundIndex].round_index, assocCachedRoundInfo[roundIndex].min_wl, assocCachedRoundInfo[roundIndex].seed,
+        assocCachedRoundInfo[roundIndex].max_mci, assocCachedRoundInfo[roundIndex].total_mine, assocCachedRoundInfo[roundIndex].total_commission, 
+        assocCachedRoundInfo[roundIndex].total_burn, assocCachedRoundInfo[roundIndex].total_deposit, assocCachedRoundInfo[roundIndex].round_mine);
     }
     var conn = conn || db;
     conn.query(
@@ -157,13 +159,16 @@ function getRoundInfoByRoundIndex(conn, roundIndex, callback){
 			if (rows.length !== 1)
                 throw Error("Can not find round index");
                 assocCachedRoundInfo[roundIndex] = rows[0];
-            callback(rows[0].round_index, rows[0].min_wl, rows[0].seed);
+            callback(rows[0].round_index, rows[0].min_wl, rows[0].seed, rows[0].max_mci, rows[0].total_mine, rows[0].total_commission,
+                rows[0].total_burn, rows[0].total_deposit, rows[0].round_mine);
 		}
 	);
 }
 
-function removeAssocCachedRoundInfo(roundIndex){
-    delete assocCachedRoundInfo[roundIndex];
+function updateAssocCachedRoundMinWl(minWL){
+    if (assocCachedRoundInfo[roundIndex]){
+        assocCachedRoundInfo[roundIndex].min_wl = minWL;
+    }
 }
 
 // function getDurationByCycleId(conn, cycleId, callback){
@@ -475,70 +480,98 @@ function getCoinbaseByRoundIndex(roundIndex){
 function getStatisticsByRoundIndex(conn, roundIndex, cb){
     if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
         return cb("getStatisticsByRoundIndex error");
-    conn.query(
-        "SELECT total_mine, total_commission, total_burn FROM round \n\
-        WHERE round_index=?",
-        [roundIndex],
-        function(rowsTotal){
-            if (rowsTotal.length !== 1)
-                return cb("get total mine error, result count is 1");
-            var totalMine = parseInt(rowsTotal[0].total_mine);
-            var totalCommission = parseInt(rowsTotal[0].total_commission);
-            var totalBurn = parseInt(rowsTotal[0].total_burn);
+    getRoundInfoByRoundIndex(conn, round_current, 
+        function(round_index, min_wl, seed, max_mci, total_mine, total_commission, total_burn, total_deposit, round_mine){
+            var totalMine = parseInt(total_mine);
+            var totalCommission = parseInt(total_commission);
+            var totalBurn = parseInt(total_burn);
+            var totalDeposit = parseInt(total_deposit);
             if(!validationUtils.isNonnegativeInteger(totalMine) || 
                 !validationUtils.isNonnegativeInteger(totalCommission) ||
-                !validationUtils.isNonnegativeInteger(totalBurn))
+                !validationUtils.isNonnegativeInteger(totalBurn) ||
+                !validationUtils.isNonnegativeInteger(totalDeposit))
                 return cb("mine or commission or burn deposit is not a positive integer");
             
             var totalPublishCoin = constants.TOTAL_WHITEBYTES + totalMine - totalCommission - totalBurn;
             if(totalPublishCoin > constants.TOTAL_WHITEBYTES_AND_MINE)
                 return cb("getStatisticsByRoundIndex error");
-            deposit.getBalanceOfAllDepositContract(conn, roundIndex, function(err, depositBalance){
-                if(err)
-                    return cb("Can not get deposit balance, so can not get total coin by round index");
-                if(!validationUtils.isNonnegativeInteger(depositBalance))
-                    return cb("all deposit balance is not a positive integer");
-                var depositRatio = Math.round((depositBalance*100)/totalPublishCoin);
-                var inflationRatio = arrInflationRatio[depositRatio];
-                cb(null, totalMine, totalPublishCoin, depositRatio, inflationRatio)
-            });  
+    
+            var depositRatio = Math.round((totalDeposit*100)/totalPublishCoin);
+            var inflationRatio = arrInflationRatio[depositRatio];
+            cb(null, totalMine, totalPublishCoin, depositRatio, inflationRatio)
         }
     );
+    // conn.query(
+    //     "SELECT total_mine, total_commission, total_burn FROM round \n\
+    //     WHERE round_index=?",
+    //     [roundIndex],
+    //     function(rowsTotal){
+    //         if (rowsTotal.length !== 1)
+    //             return cb("get total mine error, result count is 1");
+    //         var totalMine = parseInt(rowsTotal[0].total_mine);
+    //         var totalCommission = parseInt(rowsTotal[0].total_commission);
+    //         var totalBurn = parseInt(rowsTotal[0].total_burn);
+    //         if(!validationUtils.isNonnegativeInteger(totalMine) || 
+    //             !validationUtils.isNonnegativeInteger(totalCommission) ||
+    //             !validationUtils.isNonnegativeInteger(totalBurn))
+    //             return cb("mine or commission or burn deposit is not a positive integer");
+            
+    //         var totalPublishCoin = constants.TOTAL_WHITEBYTES + totalMine - totalCommission - totalBurn;
+    //         if(totalPublishCoin > constants.TOTAL_WHITEBYTES_AND_MINE)
+    //             return cb("getStatisticsByRoundIndex error");
+    //         deposit.getBalanceOfAllDepositContract(conn, roundIndex, function(err, depositBalance){
+    //             if(err)
+    //                 return cb("Can not get deposit balance, so can not get total coin by round index");
+    //             if(!validationUtils.isNonnegativeInteger(depositBalance))
+    //                 return cb("all deposit balance is not a positive integer");
+    //             var depositRatio = Math.round((depositBalance*100)/totalPublishCoin);
+    //             var inflationRatio = arrInflationRatio[depositRatio];
+    //             cb(null, totalMine, totalPublishCoin, depositRatio, inflationRatio)
+    //         });  
+    //     }
+    // );
 }
 
 function getTotalCoinByRoundIndex(conn, roundIndex, cb){
     if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
         return cb(0);
-    conn.query(
-        "SELECT total_mine, total_commission, total_burn FROM round \n\
-        WHERE round_index=?",
-        [roundIndex],
-        function(rowsTotal){
-            if (rowsTotal.length !== 1)
-                throw Error("get total mine error, result count is 1");
-            var totalMine = parseInt(rowsTotal[0].total_mine);
-            var totalCommission = parseInt(rowsTotal[0].total_commission);
-            var totalBurn = parseInt(rowsTotal[0].total_burn);
-            if(!validationUtils.isNonnegativeInteger(totalMine) || 
-                !validationUtils.isNonnegativeInteger(totalCommission) ||
-                !validationUtils.isNonnegativeInteger(totalBurn))
-                throw Error("mine or commission or burn deposit is not a positive integer");
-            
-            var totalPublishCoin = constants.TOTAL_WHITEBYTES + totalMine - totalCommission - totalBurn;
-            if(totalPublishCoin > constants.TOTAL_WHITEBYTES_AND_MINE)
+    getRoundInfoByRoundIndex(conn, round_current, 
+        function(round_index, min_wl, seed, max_mci, total_mine, total_commission, total_burn, total_deposit, round_mine){
+            if(!validationUtils.isNonnegativeInteger(round_mine))
                 return cb(0);
-            deposit.getBalanceOfAllDepositContract(conn, roundIndex, function(err, depositBalance){
-                if(err)
-                    throw Error("Can not get deposit balance, so can not get total coin by round index");
-                if(!validationUtils.isNonnegativeInteger(depositBalance))
-                    throw Error("all deposit balance is not a positive integer");
-                var depositRatio = Math.round((depositBalance*100)/totalPublishCoin);
-                
-                var inflationRatio = arrInflationRatio[depositRatio];
-                cb(Math.floor((inflationRatio*totalPublishCoin)/constants.ROUND_TOTAL_YEAR));
-            });  
+            cb(round_mine);
         }
     );
+    // conn.query(
+    //     "SELECT total_mine, total_commission, total_burn FROM round \n\
+    //     WHERE round_index=?",
+    //     [roundIndex],
+    //     function(rowsTotal){
+    //         if (rowsTotal.length !== 1)
+    //             throw Error("get total mine error, result count is 1");
+    //         var totalMine = parseInt(rowsTotal[0].total_mine);
+    //         var totalCommission = parseInt(rowsTotal[0].total_commission);
+    //         var totalBurn = parseInt(rowsTotal[0].total_burn);
+    //         if(!validationUtils.isNonnegativeInteger(totalMine) || 
+    //             !validationUtils.isNonnegativeInteger(totalCommission) ||
+    //             !validationUtils.isNonnegativeInteger(totalBurn))
+    //             throw Error("mine or commission or burn deposit is not a positive integer");
+            
+    //         var totalPublishCoin = constants.TOTAL_WHITEBYTES + totalMine - totalCommission - totalBurn;
+    //         if(totalPublishCoin > constants.TOTAL_WHITEBYTES_AND_MINE)
+    //             return cb(0);
+    //         deposit.getBalanceOfAllDepositContract(conn, roundIndex, function(err, depositBalance){
+    //             if(err)
+    //                 throw Error("Can not get deposit balance, so can not get total coin by round index");
+    //             if(!validationUtils.isNonnegativeInteger(depositBalance))
+    //                 throw Error("all deposit balance is not a positive integer");
+    //             var depositRatio = Math.round((depositBalance*100)/totalPublishCoin);
+                
+    //             var inflationRatio = arrInflationRatio[depositRatio];
+    //             cb(Math.floor((inflationRatio*totalPublishCoin)/constants.ROUND_TOTAL_YEAR));
+    //         });  
+    //     }
+    // );
 }
 
 //used by explorer 
@@ -568,6 +601,29 @@ function getMaxMciByRoundIndex(conn, roundIndex, callback){
             callback(rows[0].max_mci);
         }
     );
+}
+
+function getRoundMineByRoundIndex(conn, roundIndex, callback){
+    getTotalMineAndCommissionByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn){
+        if(!validationUtils.isNonnegativeInteger(totalMine) || 
+            !validationUtils.isNonnegativeInteger(totalCommission) ||
+            !validationUtils.isNonnegativeInteger(totalBurn))
+            return callback(0,0,0,0,0);
+        
+        var totalPublishCoin = constants.TOTAL_WHITEBYTES + totalMine - totalCommission - totalBurn;
+        if(totalPublishCoin > constants.TOTAL_WHITEBYTES_AND_MINE)
+            return callback(totalMine, totalCommission, totalBurn, 0, 0);
+        deposit.getBalanceOfAllDepositContract(conn, roundIndex, function(err, totalDeposit){
+            if(err)
+                return callback(totalMine, totalCommission, totalBurn, 0, 0);
+            if(!validationUtils.isNonnegativeInteger(totalDeposit))
+                return callback(totalMine, totalCommission, totalBurn, 0, 0);
+            var depositRatio = Math.round((totalDeposit*100)/totalPublishCoin);
+            var inflationRatio = arrInflationRatio[depositRatio];
+            var roundMine = Math.floor((inflationRatio*totalPublishCoin)/constants.ROUND_TOTAL_YEAR);
+            callback(totalMine, totalCommission, totalBurn, totalDeposit, roundMine)
+        });  
+    });
 }
 
 function getTotalMineAndCommissionByRoundIndex(conn, roundIndex, callback){
@@ -911,7 +967,7 @@ exports.getAverageDifficultyByCycleId = getAverageDifficultyByCycleId;
 
 exports.getCurrentRoundInfo = getCurrentRoundInfo;
 exports.getRoundInfoByRoundIndex = getRoundInfoByRoundIndex;
-exports.removeAssocCachedRoundInfo = removeAssocCachedRoundInfo;
+exports.updateAssocCachedRoundMinWl = updateAssocCachedRoundMinWl;
 
 exports.getWitnessesByRoundIndex = getWitnessesByRoundIndex;
 exports.getRoundIndexByMci = getRoundIndexByMci;
@@ -928,9 +984,9 @@ exports.queryFirstTrustMEBallOnMainChainByRoundIndex	= queryFirstTrustMEBallOnMa
 // exports.getSumCoinbaseByEndRoundIndex	= getSumCoinbaseByEndRoundIndex;
 
 exports.getTotalMineAndCommissionByRoundIndex	= getTotalMineAndCommissionByRoundIndex;
+exports.getRoundMineByRoundIndex	= getRoundMineByRoundIndex;
 
 exports.getLastCoinbaseUnitRoundIndex	= getLastCoinbaseUnitRoundIndex;
 
 exports.getStatisticsByRoundIndex	= getStatisticsByRoundIndex;
-
 
