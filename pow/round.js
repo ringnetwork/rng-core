@@ -604,7 +604,7 @@ function getMaxMciByRoundIndex(conn, roundIndex, callback){
 }
 
 function getRoundMineByRoundIndex(conn, roundIndex, callback){
-    getTotalMineAndCommissionByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn){
+    getTotalMineAndCommissionByRoundIndex(conn, roundIndex, function(totalMine, totalCommission, totalBurn){
         if(!validationUtils.isNonnegativeInteger(totalMine) || 
             !validationUtils.isNonnegativeInteger(totalCommission) ||
             !validationUtils.isNonnegativeInteger(totalBurn))
