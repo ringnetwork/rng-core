@@ -74,7 +74,7 @@ function markMcIndexStable(conn, mci, onDone){
 								"UPDATE round SET min_wl=? WHERE round_index=?", 
 								[rowTrustME[0].witnessed_level, round_index], 
 								function(){			
-									round.updateAssocCachedRoundMinWl(rowTrustME[0].witnessed_level);						
+									round.updateAssocCachedRoundMinWl(round_index, rowTrustME[0].witnessed_level);						
 									eventBus.emit("launch_pow", round_index);									
 									cb();
 								}

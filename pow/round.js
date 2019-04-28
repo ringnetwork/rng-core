@@ -165,7 +165,7 @@ function getRoundInfoByRoundIndex(conn, roundIndex, callback){
 	);
 }
 
-function updateAssocCachedRoundMinWl(minWL){
+function updateAssocCachedRoundMinWl(roundIndex, minWL){
     if (assocCachedRoundInfo[roundIndex]){
         assocCachedRoundInfo[roundIndex].min_wl = minWL;
     }
