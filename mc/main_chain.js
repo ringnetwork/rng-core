@@ -96,16 +96,14 @@ function markMcIndexStable(conn, mci, onDone){
 									pow.calculatePublicSeedByRoundIndex( conn, round_index+1, function(err, newSeed){
 										if(err)
 											throw Error(" calculate new seed error !");
-										round.getRoundMineByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn, totalDeposit, roundMine){
-											conn.query(
-												"INSERT INTO round (round_index, min_wl, seed, total_mine, total_commission, total_burn, total_deposit, round_mine)  \n\
-												VALUES (?, null, ?, ?, ?, ?, ?, ?)", 
-												[round_index+1, newSeed, totalMine, totalCommission, totalBurn, totalDeposit, roundMine], 
-												function(){
-													cb1();
-												}
-											);
-										});
+										conn.query(
+											"INSERT INTO round (round_index, min_wl, seed, total_mine, total_commission, total_burn, total_deposit, round_mine)  \n\
+											VALUES (?, null, ?, ?, ?, ?, ?, ?)", 
+											[round_index+1, newSeed, 0, 0, 0, 0, 0], 
+											function(){
+												cb1();
+											}
+										);									
 									});			
 								},
 								function(cb1){    // update max mci
@@ -131,6 +129,18 @@ function markMcIndexStable(conn, mci, onDone){
 											function(){
 												infoMiningSuccess(round_index+1, nBits);
 												cb1();
+											}
+										);
+									});
+								},
+								function(cb1){    // calculate total mine and commission and burn
+									round.getRoundMineByRoundIndex(conn, round_index, function(totalMine, totalCommission, totalBurn, totalDeposit, roundMine){
+										conn.query(
+											"UPDATE round set total_mine=?, total_commission=?, total_burn=?, total_deposit=?, round_mine=? \n\
+											where round_index=?",
+											[totalMine, totalCommission, totalBurn, totalDeposit, roundMine, round_index],
+											function(){
+												cb1();	
 											}
 										);
 									});
