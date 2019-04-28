@@ -171,6 +171,16 @@ function updateAssocCachedRoundMinWl(roundIndex, minWL){
     }
 }
 
+function updateAssocCachedRoundMine(roundIndex, total_mine, total_commission, total_burn, total_deposit, round_mine){
+    if (assocCachedRoundInfo[roundIndex]){
+        assocCachedRoundInfo[roundIndex].total_mine = total_mine;
+        assocCachedRoundInfo[roundIndex].total_commission = total_commission;
+        assocCachedRoundInfo[roundIndex].total_burn = total_burn;
+        assocCachedRoundInfo[roundIndex].total_deposit = total_deposit;
+        assocCachedRoundInfo[roundIndex].round_mine = round_mine;
+    }
+}
+
 // function getDurationByCycleId(conn, cycleId, callback){
 //     if(cycleId <= constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION) 
 //         throw Error("The first " + constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION + " cycles do not need to calculate duration");
@@ -968,6 +978,7 @@ exports.getAverageDifficultyByCycleId = getAverageDifficultyByCycleId;
 exports.getCurrentRoundInfo = getCurrentRoundInfo;
 exports.getRoundInfoByRoundIndex = getRoundInfoByRoundIndex;
 exports.updateAssocCachedRoundMinWl = updateAssocCachedRoundMinWl;
+exports.updateAssocCachedRoundMine = updateAssocCachedRoundMine;
 
 exports.getWitnessesByRoundIndex = getWitnessesByRoundIndex;
 exports.getRoundIndexByMci = getRoundIndexByMci;

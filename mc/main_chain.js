@@ -140,6 +140,7 @@ function markMcIndexStable(conn, mci, onDone){
 											where round_index=?",
 											[totalMine, totalCommission, totalBurn, totalDeposit, roundMine, round_index],
 											function(){
+												round.updateAssocCachedRoundMine(round_index, totalMine, totalCommission, totalBurn, totalDeposit, roundMine);		
 												cb1();	
 											}
 										);
