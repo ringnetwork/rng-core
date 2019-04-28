@@ -1766,7 +1766,7 @@ function validatePaymentInputsAndOutputs(conn, payload, objAsset, message_index,
 								round.getCoinbaseByRoundIndexAndAddress(conn,objUnit.round_index -1,objUnit.authors[0].address,
 								function(commission){
 									if (commission != input.amount){
-										return cb("coinbase unit amount is incorrect ");
+										return cb("coinbase unit amount is incorrect " +commission +":"+input.amount);
 									}
 									// coinbase unit can only consist of one message 
 									if(objUnit.messages.length !== 1 )
