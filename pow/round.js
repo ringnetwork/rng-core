@@ -535,7 +535,7 @@ function getStatisticsByRoundIndex(conn, roundIndex, cb){
 function getTotalCoinByRoundIndex(conn, roundIndex, cb){
     if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
         return cb(0);
-    getRoundInfoByRoundIndex(conn, round_current, 
+    getRoundInfoByRoundIndex(conn, roundIndex, 
         function(round_index, min_wl, seed, max_mci, total_mine, total_commission, total_burn, total_deposit, round_mine){
             if(!validationUtils.isNonnegativeInteger(round_mine))
                 return cb(0);
