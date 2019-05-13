@@ -41,8 +41,8 @@ function getTotalRewardByPeriod(conn, rewardPeriod, cb){
     var conn = conn || db;
     if(!validationUtils.isPositiveInteger(rewardPeriod))
         return cb("param rewardPeriod is not a positive number");
-    if(rewardPeriod === 1)
-        return cb(null, 0);
+    // if(rewardPeriod === 1)
+    //     return cb(null, 0);
     let maxRound = getMaxRoundOfReward(rewardPeriod);
     let minRound = 0;
     if(rewardPeriod > 1)
@@ -54,7 +54,7 @@ function getTotalRewardByPeriod(conn, rewardPeriod, cb){
         function(rows) {
             if (rows.length !== 1 )
                 return cb("getTotalRewardByPeriod sql error");
-            cb(null, rows[0].TotalReward);
+            cb(null, rows[0].TotalReward*constants.DEPOSIT_REWARD_PERCENT);
         }
     );
 }
@@ -66,10 +66,11 @@ function getCoinRewardRatio(conn, rewardPeriod, callback){
     var conn = conn || db;
     if(!validationUtils.isPositiveInteger(rewardPeriod))
         return callback("param rewardPeriod is not a positive number");
-    if(rewardPeriod === 1)
-        return callback(null, []);
+    // if(rewardPeriod === 1)
+    //     return callback(null, []);
     let maxRound = getMaxRoundOfReward(rewardPeriod);
-    conn.query("SELECT outputs.address,amount,main_chain_index FROM outputs JOIN supernode ON outputs.address=supernode.deposit_address \n\
+    conn.query("SELECT outputs.address,supernode.safe_address,amount,main_chain_index FROM outputs \n\
+        JOIN supernode ON outputs.address=supernode.deposit_address \n\
         JOIN units USING(unit) WHERE is_spent=0 AND is_stable=1 AND sequence='good'", 
         function(rowsDeposit) {
             if(rowsDeposit.length===0)
@@ -88,7 +89,7 @@ function getCoinRewardRatio(conn, rewardPeriod, callback){
                         var coinAge = Math.floor((maxRound - round_index)/constants.DEPOSIT_REWARD_PERIOD);
                         var coinReward = coinAge * Math.floor(row.amount/1000000)
                         totalCoin += coinReward;
-                        totalCoinAgeResult.push({"address":row.address, "coinAge": coinAge, 
+                        totalCoinAgeResult.push({"address":row.safe_address, "coinAge": coinAge, 
                             "coinAmount": row.amount, "coinReward": coinReward});
                         cb();
                     });
