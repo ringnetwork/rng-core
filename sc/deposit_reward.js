@@ -54,7 +54,7 @@ function getTotalRewardByPeriod(conn, rewardPeriod, cb){
         function(rows) {
             if (rows.length !== 1 )
                 return cb("getTotalRewardByPeriod sql error");
-            cb(null, rows[0].TotalReward*constants.DEPOSIT_REWARD_PERCENT);
+            cb(null, Math.floor(rows[0].TotalReward*constants.DEPOSIT_REWARD_PERCENT));
         }
     );
 }
