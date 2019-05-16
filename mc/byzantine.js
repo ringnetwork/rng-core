@@ -533,6 +533,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
         Object.keys(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p]).length === 0){
         console.log("byllllogll-handleGossipMessage-" + h_p + "-" + p_p + " --- step_p:" 
             + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+            + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
             + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[gossipMessage.h]));
         assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] = {"proposal":{}, "received_addresses":[],
             "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
