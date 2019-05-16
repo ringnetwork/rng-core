@@ -490,7 +490,7 @@ function getCoinbaseByRoundIndex(roundIndex){
 function getStatisticsByRoundIndex(conn, roundIndex, cb){
     if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
         return cb("getStatisticsByRoundIndex error");
-    getRoundInfoByRoundIndex(conn, round_current, 
+    getRoundInfoByRoundIndex(conn, roundIndex, 
         function(round_index, min_wl, seed, max_mci, total_mine, total_commission, total_burn, total_deposit, round_mine){
             var totalMine = parseInt(total_mine);
             var totalCommission = parseInt(total_commission);
