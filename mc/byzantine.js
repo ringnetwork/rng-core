@@ -531,6 +531,9 @@ function handleGossipMessage(sKey, gossipMessage, callback){
     if(!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] || 
         typeof assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] === 'undefined' || 
         Object.keys(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p]).length === 0){
+        console.log("byllllogll-handleGossipMessage-" + h_p + "-" + p_p + " --- step_p:" 
+            + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+            + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[gossipMessage.h]));
         assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] = {"proposal":{}, "received_addresses":[],
             "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
             "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};    
@@ -894,10 +897,12 @@ function pushByzantineProposal(h, p, tempProposal, vp, isValid, onDone) {
     if(proposal === null || typeof proposal === 'undefined'
         || proposal.unit === null || typeof proposal.unit === 'undefined'){
         return onDone("proposal or unit can not be null");
+        throw Error("proposal or unit can not be null");
     }
     composer.composeCoordinatorSig(address_p, proposal.unit, supernode.signerProposal, function(err, objAuthor){
         if(err)
-            return onDone(err);
+            //return onDone(err);
+            throw Error(err);
         proposal.sig = objAuthor;
         proposal.vp = vp;
         proposal.isValid = isValid;        
@@ -905,6 +910,9 @@ function pushByzantineProposal(h, p, tempProposal, vp, isValid, onDone) {
             if(!assocByzantinePhase[h].phase[p] || 
                 typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
                 Object.keys(assocByzantinePhase[h].phase[p]).length === 0){
+                console.log("byllllogll-pushByzantineProposal-" + h_p + "-" + p_p + " --- step_p:" 
+                    + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                    + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[h]));
                 assocByzantinePhase[h].phase[p] = {"proposal":proposal, "received_addresses":[],
                     "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
                     "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}}; 
@@ -927,6 +935,9 @@ function pushByzantinePrevote(h, p, idv, address, isApproved) {
             if(!assocByzantinePhase[h].phase[p] || 
                 typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
                 Object.keys(assocByzantinePhase[h].phase[p]).length === 0){
+                console.log("byllllogll-pushByzantinePrevote-" + h_p + "-" + p_p + " --- step_p:" 
+                    + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                    + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[h]));
                 assocByzantinePhase[h].phase[p] =  {"proposal":{}, "received_addresses":[],
                 "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
                 "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};     
@@ -956,6 +967,9 @@ function pushByzantinePrevoteTemp(h, p, idv, address, isApproved) {
             if(!assocByzantinePhase[h].phase[p] || 
                 typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
                 Object.keys(assocByzantinePhase[h].phase[p]).length === 0){
+                console.log("byllllogll-pushByzantinePrevoteTemp-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[h]));
                 assocByzantinePhase[h].phase[p] =  {"proposal":{}, "received_addresses":[],
                 "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
                 "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};     
@@ -983,6 +997,9 @@ function pushByzantinePrecommit(h, p, idv, address, sig, isApproved) {
         if(!assocByzantinePhase[h].phase[p] || 
             typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
             Object.keys(assocByzantinePhase[h].phase[p]).length === 0){
+            console.log("byllllogll-pushByzantinePrecommit-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[h]));
             assocByzantinePhase[h].phase[p] = {"proposal":{}, "received_addresses":[],
              "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
              "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};   
@@ -1017,6 +1034,9 @@ function pushByzantinePrecommitTemp(h, p, idv, address, sig, isApproved) {
         if(!assocByzantinePhase[h].phase[p] || 
             typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
             Object.keys(assocByzantinePhase[h].phase[p]).length === 0){
+            console.log("byllllogll-pushByzantinePrecommitTemp-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[h]));
             assocByzantinePhase[h].phase[p] = {"proposal":{}, "received_addresses":[],
              "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
              "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};   
