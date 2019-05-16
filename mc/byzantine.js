@@ -896,7 +896,7 @@ function pushByzantineProposal(h, p, tempProposal, vp, isValid, onDone) {
     var proposal = _.cloneDeep(tempProposal);
     if(proposal === null || typeof proposal === 'undefined'
         || proposal.unit === null || typeof proposal.unit === 'undefined'){
-        return onDone("proposal or unit can not be null");
+        //return onDone("proposal or unit can not be null");
         throw Error("proposal or unit can not be null");
     }
     composer.composeCoordinatorSig(address_p, proposal.unit, supernode.signerProposal, function(err, objAuthor){
