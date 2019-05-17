@@ -379,6 +379,7 @@ function obtainMiningInput( oConn, uRoundIndex, pfnCallback )
 			publicSeed		: sCurrentPublicSeed,
 			superNodeAuthor		: sSuperNodeAuthorAddress,
 		};
+		console.log("testingMiningInput:"+JSON.stringify(objInput));
 		pfnCallback( null, objInput );
 	});
 
@@ -610,6 +611,7 @@ function checkProofOfWork( oConn, objInput, sHash, nNonce, pfnCallback )
 
 			//	...
 			let objSelfInput = Object.assign( {}, objInput, { bits : uSelfBits } );
+			console.log("testingMiningProof:"+JSON.stringify(objSelfInput));
 			_pow_miner.checkProofOfWork
 			(
 				_createMiningInputBufferFromObject( objSelfInput ),
@@ -858,171 +860,171 @@ function queryBitsValueByCycleIndex( oConn, uCycleIndex, pfnCallback )
 }
 
 
-/**
- *	calculate bits value
- *
- *	@param	{handle}	oConn
- *	@param	{function}	oConn.query
- *	@param	{number}	uCycleIndex		- index of new round
- * 	@param	{function}	pfnCallback( err, nNewBitsValue )
- */
-function calculateBitsValueByCycleIndex( oConn, uCycleIndex, pfnCallback )
-{
-	if ( ! oConn )
-	{
-		return pfnCallback( `call calculateBitsValueByCycleIndex with invalid oConn` );
-	}
-	if ( 'number' !== typeof uCycleIndex || uCycleIndex < 1 )
-	{
-		return pfnCallback( `call calculateBitsValueByCycleIndex with invalid uCycleIndex` );
-	}
+// /**
+//  *	calculate bits value
+//  *
+//  *	@param	{handle}	oConn
+//  *	@param	{function}	oConn.query
+//  *	@param	{number}	uCycleIndex		- index of new round
+//  * 	@param	{function}	pfnCallback( err, nNewBitsValue )
+//  */
+// function calculateBitsValueByCycleIndex( oConn, uCycleIndex, pfnCallback )
+// {
+// 	if ( ! oConn )
+// 	{
+// 		return pfnCallback( `call calculateBitsValueByCycleIndex with invalid oConn` );
+// 	}
+// 	if ( 'number' !== typeof uCycleIndex || uCycleIndex < 1 )
+// 	{
+// 		return pfnCallback( `call calculateBitsValueByCycleIndex with invalid uCycleIndex` );
+// 	}
 
-	let nAverageBits;
-	let nTimeUsed;
-	let nTimeStandard;
+// 	let nAverageBits;
+// 	let nTimeUsed;
+// 	let nTimeStandard;
 
-	//
-	//	return bits value of cycle 1,
-	//	if uCycleIndex <= _constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION
-	//
-	if ( uCycleIndex <= _constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION + 1 )
-	{
-		return queryBitsValueByCycleIndex
-		(
-			oConn,
-			1,
-			function( err, nBits )
-			{
-				if ( err )
-				{
-					return pfnCallback( err );
-				}
+// 	//
+// 	//	return bits value of cycle 1,
+// 	//	if uCycleIndex <= _constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION
+// 	//
+// 	if ( uCycleIndex <= _constants.COUNT_CYCLES_FOR_DIFFICULTY_DURATION + 1 )
+// 	{
+// 		return queryBitsValueByCycleIndex
+// 		(
+// 			oConn,
+// 			1,
+// 			function( err, nBits )
+// 			{
+// 				if ( err )
+// 				{
+// 					return pfnCallback( err );
+// 				}
 
-				return pfnCallback( null, nBits );
-			}
-		);
-	}
+// 				return pfnCallback( null, nBits );
+// 			}
+// 		);
+// 	}
 
-	//	...
-	_async.series
-	([
-		function( pfnNext )
-		{
-			_round.getAverageDifficultyByCycleId
-			(
-				oConn,
-				uCycleIndex - 1,
-				function( nBits )
-				{
-					nAverageBits = nBits;
-					return pfnNext();
-				}
-			);
-		},
-		function( pfnNext )
-		{
-			//	in seconds
-			_round.getDurationByCycleId
-			(
-				oConn,
-				uCycleIndex - 1,
-				function( nTimeUsedInSecond )
-				{
-					console.log( `%%% _round.getDurationByCycleId, nTimeUsedInSecond = ${ nTimeUsedInSecond }` );
+// 	//	...
+// 	_async.series
+// 	([
+// 		function( pfnNext )
+// 		{
+// 			_round.getAverageDifficultyByCycleId
+// 			(
+// 				oConn,
+// 				uCycleIndex - 1,
+// 				function( nBits )
+// 				{
+// 					nAverageBits = nBits;
+// 					return pfnNext();
+// 				}
+// 			);
+// 		},
+// 		function( pfnNext )
+// 		{
+// 			//	in seconds
+// 			_round.getDurationByCycleId
+// 			(
+// 				oConn,
+// 				uCycleIndex - 1,
+// 				function( nTimeUsedInSecond )
+// 				{
+// 					console.log( `%%% _round.getDurationByCycleId, nTimeUsedInSecond = ${ nTimeUsedInSecond }` );
 
-					//	...
-					if ( 'number' === typeof nTimeUsedInSecond &&
-						nTimeUsedInSecond > 0 )
-					{
-						//
-						//	to be continued ...
-						//
-						nTimeUsed = nTimeUsedInSecond;
-						return pfnNext();
-					}
-					else
-					{
-						//
-						//	STOP HERE,
-						//	return bits value of previous cycle
-						//
-						return queryBitsValueByCycleIndex
-						(
-							oConn,
-							uCycleIndex - 1,
-							function( err, nBits )
-							{
-								if ( err )
-								{
-									return pfnNext( err );
-								}
+// 					//	...
+// 					if ( 'number' === typeof nTimeUsedInSecond &&
+// 						nTimeUsedInSecond > 0 )
+// 					{
+// 						//
+// 						//	to be continued ...
+// 						//
+// 						nTimeUsed = nTimeUsedInSecond;
+// 						return pfnNext();
+// 					}
+// 					else
+// 					{
+// 						//
+// 						//	STOP HERE,
+// 						//	return bits value of previous cycle
+// 						//
+// 						return queryBitsValueByCycleIndex
+// 						(
+// 							oConn,
+// 							uCycleIndex - 1,
+// 							function( err, nBits )
+// 							{
+// 								if ( err )
+// 								{
+// 									return pfnNext( err );
+// 								}
 
-								//	...
-								//	bits of previous cycle
-								//
-								return pfnCallback( null, nBits );
-							}
-						);
-					}
-				}
-			);
-		},
-		function( pfnNext )
-		{
-			//
-			//	in seconds
-			//
-			nTimeStandard = _round.getStandardDuration();
-			return pfnNext();
-		}
-	], function( err )
-	{
-		if ( err )
-		{
-			return pfnCallback( err );
-		}
+// 								//	...
+// 								//	bits of previous cycle
+// 								//
+// 								return pfnCallback( null, nBits );
+// 							}
+// 						);
+// 					}
+// 				}
+// 			);
+// 		},
+// 		function( pfnNext )
+// 		{
+// 			//
+// 			//	in seconds
+// 			//
+// 			nTimeStandard = _round.getStandardDuration();
+// 			return pfnNext();
+// 		}
+// 	], function( err )
+// 	{
+// 		if ( err )
+// 		{
+// 			return pfnCallback( err );
+// 		}
 
-		//
-		//	calculate next bits
-		//
-		_pow_miner.calculateNextWorkRequired
-		(
-			nAverageBits,
-			nTimeUsed,
-			nTimeStandard,
-			function( err, oData )
-			{
-				//
-				//	oData
-				//	{ bits : uNextBits }
-				//
-				if ( err )
-				{
-					return pfnCallback( err );
-				}
+// 		//
+// 		//	calculate next bits
+// 		//
+// 		_pow_miner.calculateNextWorkRequired
+// 		(
+// 			nAverageBits,
+// 			nTimeUsed,
+// 			nTimeStandard,
+// 			function( err, oData )
+// 			{
+// 				//
+// 				//	oData
+// 				//	{ bits : uNextBits }
+// 				//
+// 				if ( err )
+// 				{
+// 					return pfnCallback( err );
+// 				}
 
-				if ( oData &&
-					'object' === typeof oData )
-				{
-					if ( oData.hasOwnProperty( 'bits' ) &&
-						'number' === typeof oData.bits &&
-						oData.bits > 0 )
-					{
-						pfnCallback( null, oData.bits );
-					}
-					else
-					{
-						pfnCallback( `calculateNextWorkRequired callback :: invalid value .bits, oData = ${ JSON.stringify( oData ) }` );
-					}
-				}
-				else
-				{
-					pfnCallback( `calculateNextWorkRequired callback :: invalid oData object` );
-				}
-			}
-		);
-	});
-}
+// 				if ( oData &&
+// 					'object' === typeof oData )
+// 				{
+// 					if ( oData.hasOwnProperty( 'bits' ) &&
+// 						'number' === typeof oData.bits &&
+// 						oData.bits > 0 )
+// 					{
+// 						pfnCallback( null, oData.bits );
+// 					}
+// 					else
+// 					{
+// 						pfnCallback( `calculateNextWorkRequired callback :: invalid value .bits, oData = ${ JSON.stringify( oData ) }` );
+// 					}
+// 				}
+// 				else
+// 				{
+// 					pfnCallback( `calculateNextWorkRequired callback :: invalid oData object` );
+// 				}
+// 			}
+// 		);
+// 	});
+// }
 
 
 /**
@@ -1291,7 +1293,7 @@ module.exports.startMiningWithInputs				= startMiningWithInputs;
 module.exports.stopMining					= stopMining;
 
 module.exports.calculatePublicSeedByRoundIndex			= calculatePublicSeedByRoundIndex;
-module.exports.calculateBitsValueByCycleIndex			= calculateBitsValueByCycleIndex;
+// module.exports.calculateBitsValueByCycleIndex			= calculateBitsValueByCycleIndex;
 module.exports.calculateBitsValueByRoundIndexWithDeposit	= calculateBitsValueByRoundIndexWithDeposit;
 
 module.exports.queryPublicSeedByRoundIndex			= queryPublicSeedByRoundIndex;

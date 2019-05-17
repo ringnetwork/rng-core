@@ -235,7 +235,7 @@ function getDurationByCycleId(conn, cycleId, callback){
             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
                 return callback(0);
             conn.query(
-                "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+                "SELECT int_value AS max_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
                 WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
                     AND sequence='good' AND is_stable=1 ",
                 [maxRoundIndex, constants.POW_TYPE_TRUSTME],
@@ -303,7 +303,7 @@ function getDurationByRoundIndex(conn, roundIndex, callback){
             if (rowsMin[0].min_timestamp === null || isNaN(rowsMin[0].min_timestamp))
                 return callback(0);
             conn.query(
-                "SELECT int_value AS min_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
+                "SELECT int_value AS max_timestamp FROM data_feeds JOIN units USING(unit) JOIN round using(round_index) \n\
                 WHERE round_index=? AND main_chain_index=round.max_mci AND feed_name='timestamp' AND pow_type=? AND is_on_main_chain=1 \n\
                     AND sequence='good' AND is_stable=1 ",
                 [roundIndex, constants.POW_TYPE_TRUSTME],
