@@ -102,7 +102,7 @@ exports.COUNT_ROUNDS_FOR_SUPERNODE_SPEND_DEPOSIT = 5;
 exports.COUNT_ROUNDS_FOR_FOUNDATION_SPEND_DEPOSIT = 5;
 
 // average time consumimg per each round
-exports.DURATION_PER_ROUND = 150;
+exports.DURATION_PER_ROUND = 300;
 
 // calculate payload commission coefficient
 exports.PAYLOAD_COEFFICIENT = {
