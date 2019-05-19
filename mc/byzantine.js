@@ -1210,15 +1210,14 @@ if(conf.IF_BYZANTINE)
 function shrinkByzantineCache(){
     // shrink assocByzantinePhase
     var arrByzantinePhases = Object.keys(assocByzantinePhase);
-	if (arrByzantinePhases.length < constants.MAX_BYZANTINE_IN_CACHE){
-        //console.log("ByzantinePhaseCacheLog:shrinkByzantineCache,will not delete, assocByzantinePhase.length:" + arrByzantinePhases.length);
-        return console.log('byllllogg byzantine cache is small, will not shrink');
+	if (arrByzantinePhases.length > constants.MAX_BYZANTINE_IN_CACHE){
+        var minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
+        for (var offset1 = minIndexByzantinePhases; offset1 < h_p - constants.MAX_BYZANTINE_IN_CACHE; offset1++){
+            //console.log("byllllogg ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp:" + offset1);
+            delete assocByzantinePhase[offset1];
+        }
     }
-    var minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
-    for (var offset1 = minIndexByzantinePhases; offset1 < h_p - constants.MAX_BYZANTINE_IN_CACHE; offset1++){
-        //console.log("byllllogg ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp:" + offset1);
-        delete assocByzantinePhase[offset1];
-    }
+    arrByzantinePhases = Object.keys(assocByzantinePhase);
     minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
     for (var offset2 = minIndexByzantinePhases; offset2 <= h_p; offset2++){
         if(assocByzantinePhase[offset2] &&
@@ -1226,8 +1225,10 @@ function shrinkByzantineCache(){
             Object.keys(assocByzantinePhase[offset2]).length > 0){
             var phaseCount = Object.keys(assocByzantinePhase[offset2].phase).length;
             if(phaseCount > constants.MAX_BYZANTINE_PHASE_IN_CACHE){
-                for (var offset3 = 0; offset3 < phaseCount - constants.MAX_BYZANTINE_PHASE_IN_CACHE; offset3++){
-                    console.log("byllllogg ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
+                var arrByzantinePhasesNumber = Object.keys(assocByzantinePhase[offset2].phase);
+                minIndexByzantinePhasesNumber = Math.min.apply(Math, arrByzantinePhasesNumber);
+                for (var offset3 = minIndexByzantinePhasesNum; offset3 < phaseCount - constants.MAX_BYZANTINE_PHASE_IN_CACHE; offset3++){
+                    console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
                     delete assocByzantinePhase[offset2].phase[offset3];
                 }
             }
