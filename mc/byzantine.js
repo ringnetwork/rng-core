@@ -1217,7 +1217,7 @@ function shrinkByzantineCache(){
         });
     }
     arrByzantinePhases = Object.keys(assocByzantinePhase);
-    console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
+    
     arrByzantinePhases.forEach(function(byzantinePhase){ 
         if(assocByzantinePhase[byzantinePhase] &&
         typeof assocByzantinePhase[byzantinePhase] !== 'undefined' &&
@@ -1230,7 +1230,7 @@ function shrinkByzantineCache(){
                 console.log("byllllogg333333 delete hp phase:" + maxIndexByzantinePhasesNumber);
                 arrByzantinePhasesNumber.forEach(function(byzantinePhaseNumber){
                     if(byzantinePhaseNumber < maxIndexByzantinePhasesNumber - constants.MAX_BYZANTINE_PHASE_IN_CACHE){
-                        console.log("byllllogg444444 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
+                        console.log("byllllogg444444 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + byzantinePhaseNumber);
                         delete assocByzantinePhase[byzantinePhase].phase[byzantinePhaseNumber];
                     }
                 });                
