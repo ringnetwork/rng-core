@@ -1217,7 +1217,6 @@ function shrinkByzantineCache(){
         });
     }
     arrByzantinePhases = Object.keys(assocByzantinePhase);
-    minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
     console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
     arrByzantinePhases.forEach(function(byzantinePhase){ 
         if(assocByzantinePhase[byzantinePhase] &&
