@@ -1226,8 +1226,8 @@ function shrinkByzantineCache(){
             var phaseCount = Object.keys(assocByzantinePhase[offset2].phase).length;
             if(phaseCount > constants.MAX_BYZANTINE_PHASE_IN_CACHE){
                 var arrByzantinePhasesNumber = Object.keys(assocByzantinePhase[offset2].phase);
-                minIndexByzantinePhasesNumber = Math.min.apply(Math, arrByzantinePhasesNumber);
-                for (var offset3 = minIndexByzantinePhasesNum; offset3 < phaseCount - constants.MAX_BYZANTINE_PHASE_IN_CACHE; offset3++){
+                var minIndexByzantinePhasesNumber = Math.min.apply(Math, arrByzantinePhasesNumber);
+                for (var offset3 = minIndexByzantinePhasesNumber; offset3 < phaseCount - constants.MAX_BYZANTINE_PHASE_IN_CACHE; offset3++){
                     console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
                     delete assocByzantinePhase[offset2].phase[offset3];
                 }
