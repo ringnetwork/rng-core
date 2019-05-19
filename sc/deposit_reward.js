@@ -97,7 +97,10 @@ function getCoinRewardRatio(conn, rewardPeriod, callback){
                 }, 
                 function(){
                     for(var i=0; i<totalCoinAgeResult.length; i++){
-                        totalCoinAgeResult[i].CoinRewardRatio = Math.floor(totalCoinAgeResult[i].coinReward*10000/totalCoin)/10000;
+                        if(totalCoin === 0)
+                            totalCoinAgeResult[i].CoinRewardRatio = 0;
+                        else
+                            totalCoinAgeResult[i].CoinRewardRatio = Math.floor(totalCoinAgeResult[i].coinReward*10000/totalCoin)/10000;
                     }
                     console.log("yyyyyyyyyyyyy2:" + totalCoin + "————" + JSON.stringify(totalCoinAgeResult));
                     callback(null, totalCoinAgeResult);
