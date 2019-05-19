@@ -157,6 +157,33 @@ function getCoordinators(conn, hp, phase, cb){
         });        
     });
 }
+function getGossiperCoordinators(conn, hp, phase, cb){
+    hp = parseInt(hp);
+    phase = parseInt(phase);
+    var pIndex = Math.abs(hp-phase+999)%constants.TOTAL_COORDINATORS;
+    if (assocByzantinePhase[hp] && assocByzantinePhase[hp].roundIndex && assocByzantinePhase[hp].witnesses){
+        return cb(null, assocByzantinePhase[hp].witnesses[pIndex], assocByzantinePhase[hp].roundIndex, assocByzantinePhase[hp].witnesses);
+    }
+    if(!validationUtils.isPositiveInteger(hp))
+        return cb("param hp is not a positive integer:" + hp);
+    if(!validationUtils.isNonnegativeInteger(phase))
+        return cb("param phase is not a positive integer:" + phase);
+    var conn = conn || db;
+    round.getRoundIndexByNewMci(conn, hp, function(roundIndex){
+        if(roundIndex === -1)
+            return cb(null, null, roundIndex, null);
+        round.getWitnessesByRoundIndex(conn, roundIndex, function(witnesses){
+            if(!assocByzantinePhase[hp] || typeof assocByzantinePhase[hp] === 'undefined' || Object.keys(assocByzantinePhase[hp]).length === 0){
+                assocByzantinePhase[hp] = {};
+                assocByzantinePhase[hp].roundIndex = roundIndex;
+                assocByzantinePhase[hp].witnesses = witnesses;
+                assocByzantinePhase[hp].phase = {};
+                assocByzantinePhase[hp].decision = {};    
+            }            
+            cb(null, witnesses[pIndex], roundIndex, witnesses);
+        });        
+    });
+}
 
 // Function StartRound(round):
 //     round p ← round
@@ -415,10 +442,23 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
         console.log("bylllloggE2 isValidAddress:" + address_p);
         return;    
     }
-   
-    getCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
+       
+    getGossiperCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
         if(err){
             console.log("bylllloggE3 get coordinators err:" + err);
+            return;
+        } 
+        if(roundIndex === -1){    // catuping or round is behind, push tu temp gossip
+            if(gossipMessage.type === constants.BYZANTINE_PREVOTE){
+                assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].prevote_temp_gossip[sKey+gossipMessage.address] = gossipMessage; 
+                pushReceivedAddresses(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].received_addresses, gossipMessage.address);
+                return;
+            }
+            else if(gossipMessage.type === constants.BYZANTINE_PRECOMMIT){
+                assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].precommit_temp_gossip[sKey+gossipMessage.address] = gossipMessage;
+                pushReceivedAddresses(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].received_addresses, gossipMessage.address);
+                return;         
+            }
             return;
         }
         if(witnesses.length !== constants.TOTAL_COORDINATORS){
