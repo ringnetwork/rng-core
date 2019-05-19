@@ -19,19 +19,19 @@ var conf = require('../config/conf.js');
 var profiler = require('../base/profiler.js');
 
 var TRANSFER_INPUT_SIZE = 0 // type: "transfer" omitted
-	+ 44 // unit
-	+ 8 // message_index
-	+ 8; // output_index
+	+ 44*constants.PAYLOAD_COEFFICIENT["payment"] // unit
+	+ 8*constants.PAYLOAD_COEFFICIENT["payment"] // message_index
+	+ 8*constants.PAYLOAD_COEFFICIENT["payment"]; // output_index
 
-var HEADERS_COMMISSION_INPUT_SIZE = 18 // type: "headers_commission"
-	+ 8 // from_main_chain_index
-	+ 8; // to_main_chain_index
+// var HEADERS_COMMISSION_INPUT_SIZE = 18 // type: "headers_commission"
+// 	+ 8 // from_main_chain_index
+// 	+ 8; // to_main_chain_index
 
-var WITNESSING_INPUT_SIZE = 10 // type: "witnessing"
-	+ 8 // from_main_chain_index
-	+ 8; // to_main_chain_index
+// var WITNESSING_INPUT_SIZE = 10 // type: "witnessing"
+// 	+ 8 // from_main_chain_index
+// 	+ 8; // to_main_chain_index
 
-var ADDRESS_SIZE = 32;
+// var ADDRESS_SIZE = 32;
 
 var hash_placeholder = "--------------------------------------------"; // 256 bits (32 bytes) base64: 44 bytes
 var sig_placeholder = "----------------------------------------------------------------------------------------"; // 88 bytes

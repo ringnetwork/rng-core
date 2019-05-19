@@ -480,11 +480,11 @@ function checkIfTrustMeAuthorByRoundIndex(conn, roundIndex, address, callback){
 // coinbase begin
 
 // old function
-function getCoinbaseByRoundIndex(roundIndex){
-    if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
-        return 0;
-	return constants.ROUND_COINBASE[Math.ceil(roundIndex/constants.ROUND_TOTAL_YEAR)-1];
-}
+// function getCoinbaseByRoundIndex(roundIndex){
+//     if(roundIndex < 1 || roundIndex > constants.ROUND_TOTAL_ALL)
+//         return 0;
+// 	return constants.ROUND_COINBASE[Math.ceil(roundIndex/constants.ROUND_TOTAL_YEAR)-1];
+// }
 
 
 function getStatisticsByRoundIndex(conn, roundIndex, cb){
@@ -963,7 +963,7 @@ setInterval(shrinkRoundCache, 1000*1000);
 exports.forwardRound = forwardRound;
 exports.getCurrentRoundIndex = getCurrentRoundIndex;
 exports.getMinWlByRoundIndex = getMinWlByRoundIndex;
-exports.getCoinbaseByRoundIndex = getCoinbaseByRoundIndex;
+// exports.getCoinbaseByRoundIndex = getCoinbaseByRoundIndex;
 
 exports.getCycleIdByRoundIndex = getCycleIdByRoundIndex;
 exports.getDurationByCycleId = getDurationByCycleId;
