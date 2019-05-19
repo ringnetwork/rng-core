@@ -22,7 +22,7 @@ exports.BYZANTINE_PROPOSE   = 1;
 exports.BYZANTINE_PREVOTE   = 2;
 exports.BYZANTINE_PRECOMMIT = 3;
 exports.MAX_BYZANTINE_IN_CACHE = 2;
-exports.MAX_BYZANTINE_PHASE_IN_CACHE = 20;
+exports.MAX_BYZANTINE_PHASE_IN_CACHE = 10;
 
 
 exports.version = '1.0';
