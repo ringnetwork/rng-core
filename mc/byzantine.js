@@ -1211,29 +1211,33 @@ function shrinkByzantineCache(){
     // shrink assocByzantinePhase
     var arrByzantinePhases = Object.keys(assocByzantinePhase);
 	if (arrByzantinePhases.length > constants.MAX_BYZANTINE_IN_CACHE){
-        var minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
-        for (var offset1 = minIndexByzantinePhases; offset1 < h_p - constants.MAX_BYZANTINE_IN_CACHE; offset1++){
-            //console.log("byllllogg ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp:" + offset1);
-            delete assocByzantinePhase[offset1];
-        }
+        arrByzantinePhases.forEach(function(byzantinePhase){ 
+            if(byzantinePhase < h_p - constants.MAX_BYZANTINE_IN_CACHE)
+                delete assocByzantinePhase[byzantinePhase];    
+        });
     }
     arrByzantinePhases = Object.keys(assocByzantinePhase);
     minIndexByzantinePhases = Math.min.apply(Math, arrByzantinePhases);
-    for (var offset2 = minIndexByzantinePhases; offset2 <= h_p; offset2++){
-        if(assocByzantinePhase[offset2] &&
-            typeof assocByzantinePhase[offset2] !== 'undefined' &&
-            Object.keys(assocByzantinePhase[offset2]).length > 0){
-            var phaseCount = Object.keys(assocByzantinePhase[offset2].phase).length;
+    console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
+    arrByzantinePhases.forEach(function(byzantinePhase){ 
+        if(assocByzantinePhase[byzantinePhase] &&
+        typeof assocByzantinePhase[byzantinePhase] !== 'undefined' &&
+        Object.keys(assocByzantinePhase[byzantinePhase]).length > 0){
+            var phaseCount = Object.keys(assocByzantinePhase[byzantinePhase].phase).length;
+            console.log("byllllogg222222 delete hp phase:" + phaseCount);
             if(phaseCount > constants.MAX_BYZANTINE_PHASE_IN_CACHE){
-                var arrByzantinePhasesNumber = Object.keys(assocByzantinePhase[offset2].phase);
-                var minIndexByzantinePhasesNumber = Math.min.apply(Math, arrByzantinePhasesNumber);
-                for (var offset3 = minIndexByzantinePhasesNumber; offset3 < phaseCount - constants.MAX_BYZANTINE_PHASE_IN_CACHE; offset3++){
-                    console.log("byllllogg111111 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
-                    delete assocByzantinePhase[offset2].phase[offset3];
-                }
+                var arrByzantinePhasesNumber = Object.keys(assocByzantinePhase[byzantinePhase].phase);
+                var maxIndexByzantinePhasesNumber = Math.max.apply(Math, arrByzantinePhasesNumber);
+                console.log("byllllogg333333 delete hp phase:" + maxIndexByzantinePhasesNumber);
+                arrByzantinePhasesNumber.forEach(function(byzantinePhaseNumber){
+                    if(byzantinePhaseNumber < maxIndexByzantinePhasesNumber - constants.MAX_BYZANTINE_PHASE_IN_CACHE){
+                        console.log("byllllogg444444 ByzantinePhaseCacheLog:shrinkByzantineCache,delete hp phase:" + offset3);
+                        delete assocByzantinePhase[byzantinePhase].phase[byzantinePhaseNumber];
+                    }
+                });                
             }
         }
-    }
+    });
 }
 
 setInterval(shrinkByzantineCache, 12*1000);
