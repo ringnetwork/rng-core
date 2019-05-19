@@ -592,6 +592,10 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                 // The gossip message cannot be handled for the time being
                 // console.log("byllllogg BYZANTINE_PREVOTE gossip sKey 2:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].prevote_temp_gossip[sKey+gossipMessage.address] = gossipMessage; 
+                console.log("bylllloggB-BYZANTINE_PREVOTE-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
                 pushReceivedAddresses(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].received_addresses, gossipMessage.address);
             }                    
             else {
@@ -607,6 +611,10 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                 // The gossip message cannot be handled for the time being
                 // console.log("byllllogg BYZANTINE_PRECOMMIT gossip sKey 2:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].precommit_temp_gossip[sKey+gossipMessage.address] = gossipMessage;
+                console.log("bylllloggB-BYZANTINE_PRECOMMIT-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
                 pushReceivedAddresses(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].received_addresses, gossipMessage.address);
             }                    
             else {
