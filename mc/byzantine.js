@@ -408,28 +408,30 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
         maxGossipPp = gossipMessage.p;
     }
     if(gossipMessage.h < h_p){
-        // console.log("byllllogg gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
+        console.log("bylllloggE1 gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
         return;
     }
     if(!validationUtils.isValidAddress(address_p)){
-        // console.log("byllllogg isValidAddress:" + address_p);
+        console.log("bylllloggE2 isValidAddress:" + address_p);
         return;    
     }
    
     getCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
         if(err){
-            // console.log("byllllogg get coordinators err:" + err);
+            console.log("bylllloggE3 get coordinators err:" + err);
             return;
         }
         if(witnesses.length !== constants.TOTAL_COORDINATORS){
-            // console.log("byllllogg coordinators count err:" + witnesses.length );
+            console.log("bylllloggE4 coordinators count err:" + witnesses.length );
             return;
         }
-        if(witnesses.indexOf(address_p) === -1)
+        if(witnesses.indexOf(address_p) === -1){
+            console.log("bylllloggE5 witnesses count err:" + JSON.stringify(witnesses) );
             return;
+        }
         handleGossipMessage(sKey, gossipMessage, function(err){
             if(err){
-                // console.log("handle gossip message err:" + err);
+                console.log("bylllloggE6 handle gossip message err:" + err);
                 return;
             }
             if(bByzantineUnderWay)
@@ -592,7 +594,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                 // The gossip message cannot be handled for the time being
                 // console.log("byllllogg BYZANTINE_PREVOTE gossip sKey 2:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].prevote_temp_gossip[sKey+gossipMessage.address] = gossipMessage; 
-                console.log("bylllloggB-BYZANTINE_PREVOTE-" + h_p + "-" + p_p + " --- step_p:" 
+                console.log("bylllloggB-BYZANTINE_PREVOTE1-" + h_p + "-" + p_p + " --- step_p:" 
                 + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
                 + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
                 + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
@@ -601,6 +603,10 @@ function handleGossipMessage(sKey, gossipMessage, callback){
             else {
                 // console.log("byllllogg BYZANTINE_PREVOTE gossip sKey 3:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 pushByzantinePrevote(gossipMessage.h, gossipMessage.p, gossipMessage.idv, gossipMessage.address, gossipMessage.idv === null ? 0 : 1);
+                console.log("bylllloggB-BYZANTINE_PREVOTE2-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
             }     
             return callback();           
             break;
@@ -611,7 +617,7 @@ function handleGossipMessage(sKey, gossipMessage, callback){
                 // The gossip message cannot be handled for the time being
                 // console.log("byllllogg BYZANTINE_PRECOMMIT gossip sKey 2:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].precommit_temp_gossip[sKey+gossipMessage.address] = gossipMessage;
-                console.log("bylllloggB-BYZANTINE_PRECOMMIT-" + h_p + "-" + p_p + " --- step_p:" 
+                console.log("bylllloggB-BYZANTINE_PRECOMMIT1-" + h_p + "-" + p_p + " --- step_p:" 
                 + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
                 + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
                 + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
@@ -620,6 +626,10 @@ function handleGossipMessage(sKey, gossipMessage, callback){
             else {
                 // console.log("byllllogg BYZANTINE_PRECOMMIT gossip sKey 3:" +gossipMessage.h + gossipMessage.p  + "-address:" + gossipMessage.address);
                 pushByzantinePrecommit(gossipMessage.h, gossipMessage.p, gossipMessage.idv, gossipMessage.address, gossipMessage.idv === null ? null : gossipMessage.sig, gossipMessage.idv === null ? 0 : 1);
+                console.log("bylllloggB-BYZANTINE_PRECOMMIT2-" + h_p + "-" + p_p + " --- step_p:" 
+                + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+                + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
+                + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
             }
             return callback();
             break;
