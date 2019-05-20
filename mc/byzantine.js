@@ -1209,9 +1209,10 @@ if(conf.IF_BYZANTINE)
 function shrinkByzantineCache(){
     // shrink assocByzantinePhase
     var arrByzantinePhases = Object.keys(assocByzantinePhase);
+    var maxIndexByzantinePhases = Math.max.apply(Math, arrByzantinePhases);
 	if (arrByzantinePhases.length > constants.MAX_BYZANTINE_IN_CACHE){
         arrByzantinePhases.forEach(function(byzantinePhase){ 
-            if(byzantinePhase < h_p - constants.MAX_BYZANTINE_IN_CACHE)
+            if(byzantinePhase < maxIndexByzantinePhases - constants.MAX_BYZANTINE_IN_CACHE)
                 delete assocByzantinePhase[byzantinePhase];    
         });
     }
