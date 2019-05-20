@@ -30,7 +30,7 @@ const _gossiper				= require('./gossiper');
 const mail			= process.browser ? null : require('../base/mail.js' + '');
 const _bUnitTestEnv		= process.env && 'object' === typeof process.env && 'string' === typeof process.env.ENV_UNIT_TEST && 'true' === process.env.ENV_UNIT_TEST.toLowerCase();
 
-const explorerUrl = "ws://explorer-beta2.ringnetwork.org:9193";
+const explorerUrl = "ws://explorer-beta2.ringnetwork.org:9194";
 
 /**
  *	@constants
