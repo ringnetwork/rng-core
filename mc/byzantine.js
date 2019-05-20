@@ -442,7 +442,17 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
         console.log("bylllloggE2 isValidAddress:" + address_p);
         return;    
     }
-       
+    if(!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] || 
+        typeof assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] === 'undefined' || 
+        Object.keys(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p]).length === 0){
+        console.log("bylllloggP-handleGossipMessage-" + h_p + "-" + p_p + " --- step_p:" 
+            + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+            + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
+            + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[gossipMessage.h]));
+        assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] = {"proposal":{}, "received_addresses":[],
+            "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
+            "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};    
+    }
     getGossiperCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
         if(err){
             console.log("bylllloggE3 get coordinators err:" + err);
@@ -570,17 +580,6 @@ function OnTimeoutPrecommit(){
 
 // private function begin 
 function handleGossipMessage(sKey, gossipMessage, callback){
-    if(!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] || 
-        typeof assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] === 'undefined' || 
-        Object.keys(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p]).length === 0){
-        console.log("bylllloggP-handleGossipMessage-" + h_p + "-" + p_p + " --- step_p:" 
-            + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
-            + " --- gossipMessage:"+ JSON.stringify(gossipMessage)
-            + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase[gossipMessage.h]));
-        assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] = {"proposal":{}, "received_addresses":[],
-            "prevote_approved":[], "prevote_opposed":[], "prevote_temp_gossip":{},
-            "precommit_approved":[], "precommit_opposed":[], "precommit_temp_gossip":{}};    
-    }
     // push the gossip message into local db
     switch(gossipMessage.type){
         case constants.BYZANTINE_PROPOSE: 
