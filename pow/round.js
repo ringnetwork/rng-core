@@ -670,7 +670,7 @@ function getTotalMineAndCommissionByRoundIndex(conn, roundIndex, callback){
                                 FROM outputs JOIN units USING(unit) \n\
                                 WHERE asset IS NULL AND address=? AND sequence='good' AND is_stable=1 \n\
                                 AND main_chain_index>? AND main_chain_index<=?", 
-                                [constants.DEPOSIT_BURN_ADDRESS, lastRoundMaxMci, currentRoundMaxMci], 
+                                [constants.INVALID_ADDRESS, lastRoundMaxMci, currentRoundMaxMci], 
                                 function(rowsBurn){
                                     if (rowsBurn.length !== 1)
                                         throw Error("Can not calculate the total brun of round index " + roundIndex);

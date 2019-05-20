@@ -274,7 +274,7 @@ function validateProposalJoint(objJoint, callbacks){
 	if (typeof objUnit !== "object" || objUnit === null)
 		return callbacks.ifInvalid("no unit object");
 	
-	console.log("\nvalidating joint identified by unit "+objJoint.unit.unit);
+	// console.log("\nvalidating joint identified by unit "+objJoint.unit.unit);
 	
 	if (!isStringOfLength(objUnit.unit, constants.HASH_LENGTH))
 		return callbacks.ifInvalid("wrong unit length");

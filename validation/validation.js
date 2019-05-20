@@ -52,7 +52,7 @@ function validate(objJoint, callbacks) {
 	if (!objUnit.unit)
 		throw Error("no unit");
 	
-	console.log("\nvalidating joint identified by unit "+objJoint.unit.unit);
+	// console.log("\nvalidating joint identified by unit "+objJoint.unit.unit);
 	
 	if (!isStringOfLength(objUnit.unit, constants.HASH_LENGTH))
 		return callbacks.ifJointError("wrong unit length");
@@ -1085,7 +1085,6 @@ function ValidateCoordinatorsAndTrustmeWithoutFork(conn, coordinators, objUnit, 
 				if(witnesses.indexOf(coordinator.address) === -1)
 					return cb("Incorrect coordinator deteced :" + coordinator.address);
 				// Validate signature
-				console.log("come to validateeach coordinator")
 				objValidationState.unit_hash_to_sign = objectHash.getProposalHashToSign(objUnit);
 				validateAuthor(conn, coordinator, objUnit, objValidationState, cb);
 			});
@@ -1902,17 +1901,17 @@ function validatePaymentInputsAndOutputs(conn, payload, objAsset, message_index,
 									}
 									// console.log("===================Deposit address: " + owner_address + "  supernode address: "+ supernodeinfo[0].address);
 									// owner_address is deposit address
-									deposit.hasInvalidUnitsFromHistory(conn, supernodeinfo[0].address, function (err, isInvalid){
-										if(err) //normal tranaction
-											return cb(err);
+									// deposit.hasInvalidUnitsFromHistory(conn, supernodeinfo[0].address, function (err, isInvalid){
+									// 	if(err) //normal tranaction
+									// 		return cb(err);
 										
 										round.getLastCoinbaseUnitRoundIndex(conn, supernodeinfo[0].address, function(err, lastCoinBaseRound){
 											if(err)
 												return cb(err);
 											// console.log("===================got last coin base round is : "+ lastCoinBaseRound);
 											round.getCurrentRoundIndex(conn, function(latestRoundIndex){
-												if (constants.FOUNDATION_SAFE_ADDRESS === coAuthorAddr){ // foundation spend deposit condition
-													return cb("Foundation safe address is burned, can not spend deposit contract balance before ")
+												if (constants.INVALID_ADDRESS === coAuthorAddr){ // foundation spend deposit condition
+													return cb("asset of invalid address is burned")
 													// if(!isInvalid) // supernode is good condition
 													// 	return cb("supernode [" + supernodeinfo[0].address + "] don not submit bad joints, Foundation can not spend its deposit balance ");
 													// if(lastCoinBaseRound === 0 ) // never participate in minning and no coinbase  record
@@ -1928,8 +1927,8 @@ function validatePaymentInputsAndOutputs(conn, payload, objAsset, message_index,
 												else if(coAuthorAddr === supernodeinfo[0].safe_address){ // condition for supernode spend the deposit balance
 													if(lastCoinBaseRound === 0 ) // not mine at all, take it anytime
 														return cb();
-													if(isInvalid)
-														return cb("supernode [" + supernodeinfo[0].address + "] submit bad joints, can not spend its deposit balance ");
+													// if(isInvalid)
+													// 	return cb("supernode [" + supernodeinfo[0].address + "] submit bad joints, can not spend its deposit balance ");
 													
 													// console.log("===================got current  round is : "+ latestRoundIndex);
 													if((latestRoundIndex - lastCoinBaseRound) < constants.COUNT_ROUNDS_FOR_SUPERNODE_SPEND_DEPOSIT){
@@ -1943,7 +1942,7 @@ function validatePaymentInputsAndOutputs(conn, payload, objAsset, message_index,
 											});
 										});
 										
-									});		
+									// });		
 								});
 							}
 						});

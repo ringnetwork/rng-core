@@ -26,7 +26,7 @@ function isDepositDefinition(arrDefinition){
         return false;
     if (!validationUtils.isArrayOfLength(arrDefinition[1][1], 2))
         return false;
-    if (arrDefinition[1][0][1] !== constants.FOUNDATION_SAFE_ADDRESS)
+    if (arrDefinition[1][0][1] !== constants.INVALID_ADDRESS)
         return false;
     if(!validationUtils.isValidAddress(arrDefinition[1][1][1]))
         return false;
@@ -168,7 +168,7 @@ function getDepositAddressBySafeAddress(conn, safeAddress, cb){
     const arrDefinition = [
         'or', 
         [
-            ['address', constants.FOUNDATION_SAFE_ADDRESS],
+            ['address', constants.INVALID_ADDRESS],
             ['address', safeAddress],
         ]
     ];
@@ -240,7 +240,7 @@ function createDepositAddress(my_address, callback) {
 	var arrDefinition = [
 		'or', 
 		[
-			['address', constants.FOUNDATION_SAFE_ADDRESS],
+			['address', constants.INVALID_ADDRESS],
 			['address', my_address],
 		]
 	];
