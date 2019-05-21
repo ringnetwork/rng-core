@@ -252,7 +252,13 @@ function startPhase(hp, phase){
             validValue_p  = null;
             validPhase_p  = -1;
         }
-
+        if(!assocByzantinePhase[hp] || typeof assocByzantinePhase[hp] === 'undefined' || Object.keys(assocByzantinePhase[hp]).length === 0){
+            assocByzantinePhase[hp] = {};
+            assocByzantinePhase[hp].roundIndex = roundIndex;
+            assocByzantinePhase[hp].witnesses = witnesses;
+            assocByzantinePhase[hp].phase = {};
+            assocByzantinePhase[hp].decision = {};    
+        }         
         if(proposer === address_p){    // i am proposer
             // if(typeof assocByzantinePhase[hp] !== 'undefined' &&
             //     Object.keys(assocByzantinePhase[hp]).length > 0 &&
