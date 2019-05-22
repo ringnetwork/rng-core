@@ -149,13 +149,6 @@ function getCoordinators(conn, hp, phase, cb){
         if(roundIndex === -1)
             return cb("have not get the last mci yet ");
         round.getWitnessesByRoundIndex(conn, roundIndex, function(witnesses){
-            if(!assocByzantinePhase[hp] || typeof assocByzantinePhase[hp] === 'undefined' || Object.keys(assocByzantinePhase[hp]).length === 0){
-                assocByzantinePhase[hp] = {};
-                assocByzantinePhase[hp].roundIndex = roundIndex;
-                assocByzantinePhase[hp].witnesses = witnesses;
-                assocByzantinePhase[hp].phase = {};
-                assocByzantinePhase[hp].decision = {};    
-            }            
             cb(null, witnesses[pIndex], roundIndex, witnesses);
         });        
     });
