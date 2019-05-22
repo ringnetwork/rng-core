@@ -170,7 +170,7 @@ function getGossiperCoordinators(conn, hp, phase, cb){
         return cb("param phase is not a positive integer:" + phase);
     var conn = conn || db;
     round.getRoundIndexByNewMci(conn, hp, function(roundIndex){
-        if(roundIndex === -1)
+        if(roundIndex === -1)   // This is the difference from above getCoordinators
             return cb(null, null, roundIndex, null);
         round.getWitnessesByRoundIndex(conn, roundIndex, function(witnesses){
             if(!assocByzantinePhase[hp] || typeof assocByzantinePhase[hp] === 'undefined' || Object.keys(assocByzantinePhase[hp]).length === 0){
@@ -464,7 +464,7 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
             console.log("bylllloggE3 get coordinators err:" + err);
             return;
         } 
-        if(roundIndex === -1){    // catuping or round is behind, push tu temp gossip
+        if(roundIndex === -1){    // catuping or round is behind, push to temp gossip
             if(gossipMessage.type === constants.BYZANTINE_PREVOTE){
                 assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].prevote_temp_gossip[sKey+gossipMessage.address] = gossipMessage; 
                 pushReceivedAddresses(assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p].received_addresses, gossipMessage.address);
@@ -516,10 +516,14 @@ eventBus.on('mci_became_stable', function(mci){
 function OnTimeoutPropose(){
     // console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose1:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ":" + step_p);
     if(h_propose_timeout === h_p && p_propose_timeout === p_p && step_p === constants.BYZANTINE_PROPOSE){
-        pushByzantinePrevote(h_propose_timeout, p_propose_timeout, null, address_p, 0);
-        // console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose2:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ": null");
-        broadcastPrevote(h_propose_timeout, p_propose_timeout, null);
-        step_p = constants.BYZANTINE_PREVOTE;
+        if(assocByzantinePhase[h_propose_timeout] && 
+            typeof assocByzantinePhase[h_propose_timeout] !== 'undefined' || 
+            Object.keys(assocByzantinePhase[h_propose_timeout]).length > 0){
+            pushByzantinePrevote(h_propose_timeout, p_propose_timeout, null, address_p, 0);
+            // console.log("byllllogg timeout broadcastPrevote OnTimeoutPropose2:" + h_p + ":" + p_p + ":" + h_propose_timeout + ":" + p_propose_timeout + ": null");
+            broadcastPrevote(h_propose_timeout, p_propose_timeout, null);
+            step_p = constants.BYZANTINE_PREVOTE;
+        }
     }
     h_propose_timeout = -1;
     p_propose_timeout = -1;
@@ -957,14 +961,6 @@ function convertJointToProposal(joint, vp, isValid){
     };
 }
 function pushByzantineProposal(h, p, tempProposal, vp, isValid, onDone) {
-    if(!assocByzantinePhase[h] || typeof assocByzantinePhase[h] === 'undefined' || Object.keys(assocByzantinePhase[h]).length === 0){
-        assocByzantinePhase[h] = {};
-        assocByzantinePhase[h].roundIndex = roundIndex;
-        assocByzantinePhase[h].witnesses = witnesses;
-        assocByzantinePhase[h].phase = {};
-        assocByzantinePhase[h].decision = {};    
-    }
-
     var proposal = _.cloneDeep(tempProposal);
     if(proposal === null || typeof proposal === 'undefined'
         || proposal.unit === null || typeof proposal.unit === 'undefined'){
@@ -1003,13 +999,6 @@ function pushByzantineProposal(h, p, tempProposal, vp, isValid, onDone) {
 // isApproved: 1 approved ; 0 opposed
 function pushByzantinePrevote(h, p, idv, address, isApproved) {
     if(address !== null ){
-        if(!assocByzantinePhase[h] || typeof assocByzantinePhase[h] === 'undefined' || Object.keys(assocByzantinePhase[h]).length === 0){
-            assocByzantinePhase[h] = {};
-            assocByzantinePhase[h].roundIndex = roundIndex;
-            assocByzantinePhase[h].witnesses = witnesses;
-            assocByzantinePhase[h].phase = {};
-            assocByzantinePhase[h].decision = {};    
-        } 
         // mutex.lock( [ "assocByzantinePhase["+h+"].phase["+p+"]" ], function( unlock ){
             if(!assocByzantinePhase[h].phase[p] || 
                 typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
@@ -1042,13 +1031,6 @@ function pushByzantinePrevote(h, p, idv, address, isApproved) {
 // isApproved: 1 approved ; 0 opposed
 function pushByzantinePrevoteTemp(h, p, idv, address, isApproved) {
     if(address !== null ){
-        if(!assocByzantinePhase[h] || typeof assocByzantinePhase[h] === 'undefined' || Object.keys(assocByzantinePhase[h]).length === 0){
-            assocByzantinePhase[h] = {};
-            assocByzantinePhase[h].roundIndex = roundIndex;
-            assocByzantinePhase[h].witnesses = witnesses;
-            assocByzantinePhase[h].phase = {};
-            assocByzantinePhase[h].decision = {};    
-        }
         // mutex.lock( [ "assocByzantinePhase["+h+"].phase["+p+"]" ], function( unlock ){
             if(!assocByzantinePhase[h].phase[p] || 
                 typeof assocByzantinePhase[h].phase[p] === 'undefined' || 
@@ -1078,13 +1060,6 @@ function pushByzantinePrevoteTemp(h, p, idv, address, isApproved) {
 }
 // isApproved: 1 approved ; 0 opposed
 function pushByzantinePrecommit(h, p, idv, address, sig, isApproved) {
-    if(!assocByzantinePhase[h] || typeof assocByzantinePhase[h] === 'undefined' || Object.keys(assocByzantinePhase[h]).length === 0){
-        assocByzantinePhase[h] = {};
-        assocByzantinePhase[h].roundIndex = roundIndex;
-        assocByzantinePhase[h].witnesses = witnesses;
-        assocByzantinePhase[h].phase = {};
-        assocByzantinePhase[h].decision = {};    
-    }
     var ifIncluded = false;
     // mutex.lock( [ "assocByzantinePhase["+h+"].phase["+p+"]" ], function( unlock ){
         if(!assocByzantinePhase[h].phase[p] || 
@@ -1122,13 +1097,6 @@ function pushByzantinePrecommit(h, p, idv, address, sig, isApproved) {
 // push byzantine precommit message of temp gossip, don't consider isValid, don't push received_addresses
 // isApproved: 1 approved ; 0 opposed
 function pushByzantinePrecommitTemp(h, p, idv, address, sig, isApproved) {
-    if(!assocByzantinePhase[h] || typeof assocByzantinePhase[h] === 'undefined' || Object.keys(assocByzantinePhase[h]).length === 0){
-        assocByzantinePhase[h] = {};
-        assocByzantinePhase[h].roundIndex = roundIndex;
-        assocByzantinePhase[h].witnesses = witnesses;
-        assocByzantinePhase[h].phase = {};
-        assocByzantinePhase[h].decision = {};    
-    }
     var ifIncluded = false;
     // mutex.lock( [ "assocByzantinePhase["+h+"].phase["+p+"]" ], function( unlock ){
         if(!assocByzantinePhase[h].phase[p] || 
