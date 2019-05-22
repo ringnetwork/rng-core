@@ -47,6 +47,9 @@ var assocByzantinePhase = {};
 var maxGossipHp = 1;
 var maxGossipPp = 0;
 var bByzantineUnderWay = false;
+
+var last_round_index = 0;
+var last_main_chain_index = 0;
 // var bTrustMeUnderWay = false;
 
 // init function begin
@@ -1204,8 +1207,8 @@ function gossipLastMessageAtFixedInterval(){
 // setInterval(gossipLastMessageAtFixedInterval, 3*1000);
 
 function consoleLog(){
-    console.log("byllllogl-" + h_p + "-" + p_p + " --- step_p:" 
-    + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
+    console.log("byllllogl-" + h_p + "-" + p_p + " --- step_p:" + step_p + " --- last_main_chain_index:" + last_main_chain_index 
+    + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p  + " --- waitingProposer:" + waitingProposer
     + " --- assocByzantinePhase:"+ JSON.stringify(assocByzantinePhase));
 }
 
@@ -1213,6 +1216,11 @@ if(conf.IF_BYZANTINE)
     setInterval(consoleLog, 10*1000);
 
 // Send the last message end
+
+eventBus.on('updated_last_round_index_from_peers', function (nLastRoundIndexFromPeers, nLastMainChainIndexFromPeers){
+    last_round_index = nLastRoundIndexFromPeers;
+    last_main_chain_index = nLastMainChainIndexFromPeers;
+})
 
 // cache begin
 
