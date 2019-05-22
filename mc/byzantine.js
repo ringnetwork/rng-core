@@ -217,6 +217,9 @@ function startPhase(hp, phase){
     else if(h_p === hp && p_p >= phase)
         return;
   
+    if(last_main_chain_index > 0 && hp < last_main_chain_index)
+        return;
+
     waitingProposer = "";
     getCoordinators(null, hp, phase, function(err, proposer, roundIndex, witnesses){
         if(err){
@@ -447,6 +450,8 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
         console.log("bylllloggE1 gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
         return;
     }
+    if(last_main_chain_index > 0 && gossipMessage.h < last_main_chain_index)
+        return;
     if(!validationUtils.isValidAddress(address_p)){
         console.log("bylllloggE2 isValidAddress:" + address_p);
         return;    
