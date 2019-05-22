@@ -456,7 +456,7 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
             assocByzantinePhase[gossipMessage.h] = {};
             assocByzantinePhase[gossipMessage.h].roundIndex = roundIndex;  // maybe roundIndex is -1, but when startphase, it will be right
             assocByzantinePhase[gossipMessage.h].witnesses = witnesses; // maybe witnesses is null, but when startphase, it will be right
-            assocByzantinePhase[hgossipMessage.hp].phase = {};
+            assocByzantinePhase[gossipMessage.h].phase = {};
             assocByzantinePhase[gossipMessage.h].decision = {};    
         }       
         if(!assocByzantinePhase[gossipMessage.h].phase[gossipMessage.p] || 
