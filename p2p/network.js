@@ -174,20 +174,24 @@ function sendVersion( ws )
 		null,
 		nCurrentRoundIndex =>
 		{
-			sendJustsaying
-			(
-				ws,
-				'version',
-				{
-					protocol_version: constants.version,
-					alt: constants.alt,
-					library: libraryPackageJson.name,
-					library_version: libraryPackageJson.version,
-					program: conf.program,
-					program_version: conf.program_version,
-					last_round_index: nCurrentRoundIndex,
-				}
-			);
+			_storage.getMaxTrustMeMci( null, function( nMaxMci )
+			{
+				sendJustsaying
+				(
+					ws,
+					'version',
+					{
+						protocol_version: constants.version,
+						alt: constants.alt,
+						library: libraryPackageJson.name,
+						library_version: libraryPackageJson.version,
+						program: conf.program,
+						program_version: conf.program_version,
+						last_round_index: nCurrentRoundIndex,
+						last_main_chain_index: nMaxMci						
+					}
+				);
+			});
 		}
 	);
 }
@@ -2807,7 +2811,7 @@ function handleJustsaying( oWs, sSubject, vBody )
 			//
 			//	update last round index
 			//
-			catchup.updateLastRoundIndexFromPeers( vBody.last_round_index );
+			catchup.updateLastRoundIndexFromPeers( vBody.last_round_index, vBody.last_main_chain_index );
 
 			//	...
 			oWs.library_version = vBody.library_version;

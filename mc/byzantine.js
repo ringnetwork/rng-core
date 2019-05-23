@@ -1217,8 +1217,14 @@ if(conf.IF_BYZANTINE)
 // Send the last message end
 
 eventBus.on('updated_last_round_index_from_peers', function (nLastRoundIndexFromPeers, nLastMainChainIndexFromPeers){
-    last_round_index = nLastRoundIndexFromPeers;
-    last_main_chain_index = nLastMainChainIndexFromPeers;
+    if ( last_round_index < nLastRoundIndexFromPeers )        
+    {
+        last_round_index = nLastRoundIndexFromPeers;
+    }
+    if ( last_main_chain_index < nLastMainChainIndexFromPeers )        
+    {
+        last_main_chain_index = nLastMainChainIndexFromPeers;
+    }
 })
 
 // cache begin
