@@ -30,7 +30,7 @@ var saveTempKeys; // function that saves temp keys
 var bScheduledTempDeviceKeyRotation = false;
 var loginHubTimeoutCount = 0;
 var loginHubTimeoutDoneCount = 0;
-var stableHub = "dev.mainchain.pow.ringnetwork.org:9191";
+var stableHub = "119.28.44.246:9195";
 
 
 function getMyDevicePubKey(){
