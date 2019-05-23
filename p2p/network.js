@@ -174,7 +174,7 @@ function sendVersion( ws )
 		null,
 		nCurrentRoundIndex =>
 		{
-			_storage.getMaxTrustMeMci( null, function( nMaxMci )
+			storage.getMaxTrustMeMci( null, function( nMaxMci )
 			{
 				sendJustsaying
 				(
