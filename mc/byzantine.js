@@ -820,72 +820,73 @@ function handleByzantine(){
                 timeout_precommit = setTimeout(OnTimeoutPrecommit, timeout);
             }
         }
-    }
-    // upon <PROPOSAL,hp,r,v,∗> from proposer(hp,r) AND 2f+1 <PRECOMMIT,hp,r,id(v)> while decisionp[hp]=nil do
-    //     if valid(v) then
-    //         decisionp[hp]=v
-    //         hp ← hp+1
-    //         reset lockedRoundp,lockedValuep,validRoundp and validValuep to initial values and empty message log
-    //         StartRound(0)
-    // function onDecisionError(phase){
-    //     console.log("byllllog startPhase onDecisionError:" + h_p + ":" + p_p);
-    //     startPhase(h_p, phase++);          
-    // }
-    // function onDecisionDone(){
-    //     console.log("byllllogg onDecisionDone" + " --- h_p:" + h_p + " --- p_p:" + p_p);
-    // }
+    
+        // upon <PROPOSAL,hp,r,v,∗> from proposer(hp,r) AND 2f+1 <PRECOMMIT,hp,r,id(v)> while decisionp[hp]=nil do
+        //     if valid(v) then
+        //         decisionp[hp]=v
+        //         hp ← hp+1
+        //         reset lockedRoundp,lockedValuep,validRoundp and validValuep to initial values and empty message log
+        //         StartRound(0)
+        // function onDecisionError(phase){
+        //     console.log("byllllog startPhase onDecisionError:" + h_p + ":" + p_p);
+        //     startPhase(h_p, phase++);          
+        // }
+        // function onDecisionDone(){
+        //     console.log("byllllogg onDecisionDone" + " --- h_p:" + h_p + " --- p_p:" + p_p);
+        // }
 
-    // console.log("byllllogl " + h_p + "-" + p_p + " --- step_p:" 
-    // + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p);
+        // console.log("byllllogl " + h_p + "-" + p_p + " --- step_p:" 
+        // + step_p + " --- lockedPhase_p:" + lockedPhase_p + " --- lockedValue_p:" + lockedValue_p);
 
-    if(assocByzantinePhase[h_p].decision === null || Object.keys(assocByzantinePhase[h_p].decision).length === 0){
-        Object.keys(assocByzantinePhase[h_p].phase).forEach(function(current_p){
-            current_p = parseInt(current_p);
-            if(current_p === p_p && current_p === assocByzantinePhase[h_p].phase[current_p].proposal.phase && 
-                assocByzantinePhase[h_p].phase[current_p].proposal.isValid === 1 && PrecommitBiggerThan2f1(h_p, current_p, 1)){
-                if(assocByzantinePhase[h_p].phase[current_p].proposal.address === address_p){
-                    assocByzantinePhase[h_p].decision = assocByzantinePhase[h_p].phase[current_p].proposal;
-                    // compose new trustme unit
-                    return decisionTrustMe(assocByzantinePhase[h_p].phase[current_p].proposal, assocByzantinePhase[h_p].phase[current_p].precommit_approved);
-                    // test code
-                    // if(address_p === "4T7YVRUWMVAJIBSWCP35C7OGCX33SAYO" && h_p === 15 && current_p === 3)
-                    // {
-                    //     console.log("byllllogg must shutdown for test");
-                    // }
-                    // else{
-                    //     return decisionTrustMe(assocByzantinePhase[h_p].phase[current_p].proposal, assocByzantinePhase[h_p].phase[current_p].precommit_approved);
-                    // }
-                }
-                else{  // not proposer, wait forever
-                    // h_prevote_timeout = h_p;
-                    // p_prevote_timeout = p_p;
-                    clearTimeout(timeout_propose);
-                    clearTimeout(timeout_prevote);
-                    clearTimeout(timeout_precommit);
-                    waitingProposer = assocByzantinePhase[h_p].phase[current_p].proposal.address;  // set waitingProposer
-                    // timeout_p = setTimeout(OnTimeoutPrecommit, 300000);
-                }
-            }
-            // upon f+1 <∗,hp,round,∗,∗> with round>roundp do
-            //     StartRound(round)
-            if(current_p > p_p){
-                if(assocByzantinePhase[h_p].phase[current_p].received_addresses &&
-                    assocByzantinePhase[h_p].phase[current_p].received_addresses.length > 0){
-                    // console.log("byllllogg byzantine startPhase received_addresses:" + JSON.stringify(assocByzantinePhase[h_p].phase[current_p].received_addresses)+"---waitingProposer:"+waitingProposer);
-                    if(assocByzantinePhase[h_p].phase[current_p].received_addresses.length >= constants.TOTAL_BYZANTINE + 1){
-                        // console.log("byllllogg byzantine startPhase received_addresses" + h_p + ":" + p_p);
-                        startPhase(h_p, current_p);
+        if(assocByzantinePhase[h_p].decision === null || Object.keys(assocByzantinePhase[h_p].decision).length === 0){
+            Object.keys(assocByzantinePhase[h_p].phase).forEach(function(current_p){
+                current_p = parseInt(current_p);
+                if(current_p === p_p && current_p === assocByzantinePhase[h_p].phase[current_p].proposal.phase && 
+                    assocByzantinePhase[h_p].phase[current_p].proposal.isValid === 1 && PrecommitBiggerThan2f1(h_p, current_p, 1)){
+                    if(assocByzantinePhase[h_p].phase[current_p].proposal.address === address_p){
+                        assocByzantinePhase[h_p].decision = assocByzantinePhase[h_p].phase[current_p].proposal;
+                        // compose new trustme unit
+                        return decisionTrustMe(assocByzantinePhase[h_p].phase[current_p].proposal, assocByzantinePhase[h_p].phase[current_p].precommit_approved);
+                        // test code
+                        // if(address_p === "4T7YVRUWMVAJIBSWCP35C7OGCX33SAYO" && h_p === 15 && current_p === 3)
+                        // {
+                        //     console.log("byllllogg must shutdown for test");
+                        // }
+                        // else{
+                        //     return decisionTrustMe(assocByzantinePhase[h_p].phase[current_p].proposal, assocByzantinePhase[h_p].phase[current_p].precommit_approved);
+                        // }
                     }
-                    else if (waitingProposer !== "" && assocByzantinePhase[h_p].phase[current_p].received_addresses.indexOf(waitingProposer) !== -1){
-                        // console.log("byllllogg byzantine startPhase waitingProposer" + h_p + ":" + p_p);
-                        // reset validValue_p and validPhase_p, the previous Byzantine was abolished
-                        validValue_p  = null;
-                        validPhase_p  = -1;
-                        startPhase(h_p, current_p);
+                    else{  // not proposer, wait forever
+                        // h_prevote_timeout = h_p;
+                        // p_prevote_timeout = p_p;
+                        clearTimeout(timeout_propose);
+                        clearTimeout(timeout_prevote);
+                        clearTimeout(timeout_precommit);
+                        waitingProposer = assocByzantinePhase[h_p].phase[current_p].proposal.address;  // set waitingProposer
+                        // timeout_p = setTimeout(OnTimeoutPrecommit, 300000);
                     }
-                }                
-            }
-        });
+                }
+                // upon f+1 <∗,hp,round,∗,∗> with round>roundp do
+                //     StartRound(round)
+                if(current_p > p_p){
+                    if(assocByzantinePhase[h_p].phase[current_p].received_addresses &&
+                        assocByzantinePhase[h_p].phase[current_p].received_addresses.length > 0){
+                        // console.log("byllllogg byzantine startPhase received_addresses:" + JSON.stringify(assocByzantinePhase[h_p].phase[current_p].received_addresses)+"---waitingProposer:"+waitingProposer);
+                        if(assocByzantinePhase[h_p].phase[current_p].received_addresses.length >= constants.TOTAL_BYZANTINE + 1){
+                            // console.log("byllllogg byzantine startPhase received_addresses" + h_p + ":" + p_p);
+                            startPhase(h_p, current_p);
+                        }
+                        else if (waitingProposer !== "" && assocByzantinePhase[h_p].phase[current_p].received_addresses.indexOf(waitingProposer) !== -1){
+                            // console.log("byllllogg byzantine startPhase waitingProposer" + h_p + ":" + p_p);
+                            // reset validValue_p and validPhase_p, the previous Byzantine was abolished
+                            validValue_p  = null;
+                            validPhase_p  = -1;
+                            startPhase(h_p, current_p);
+                        }
+                    }                
+                }
+            });
+        }
     }    
 }
 

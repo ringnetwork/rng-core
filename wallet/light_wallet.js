@@ -148,7 +148,7 @@ function refreshLightClientHistory() {
 		prepareRequestForHistory(function (objRequest) {
 			if (!objRequest)
 				return finish();
-			console.log(JSON.stringify(objRequest));
+			console.log("RequestForHistory:"+JSON.stringify(objRequest));
 			network.sendRequest(ws, 'light/get_history', objRequest, false, function (ws, request, response) {
 				if (response.error)
 					return finish(response.error);
