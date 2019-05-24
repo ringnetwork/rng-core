@@ -402,6 +402,246 @@ function processHistory(objResponse, callbacks){
 
 }
 
+
+
+function preparePowHistory( historyRequest, callbacks )
+{
+	var arrKnownStableUnits	= historyRequest.known_stable_units;
+	//pow wallet modified version
+	// var arrWitnesses = historyRequest.witnesses;
+	var arrAddresses	= historyRequest.addresses;
+	var arrRequestedJoints	= historyRequest.requested_joints;
+
+	if (!arrAddresses && !arrRequestedJoints)
+		return callbacks.ifError("neither addresses nor joints requested");
+	if (arrAddresses)
+	{
+		if (!ValidationUtils.isNonemptyArray(arrAddresses))
+			return callbacks.ifError("no addresses");
+		if (arrKnownStableUnits && !ValidationUtils.isNonemptyArray(arrKnownStableUnits))
+			return callbacks.ifError("known_stable_units must be non-empty array");
+	}
+	if (arrRequestedJoints && !ValidationUtils.isNonemptyArray(arrRequestedJoints))
+		return callbacks.ifError("no requested joints");
+	// if (!ValidationUtils.isArrayOfLength(arrWitnesses, constants.COUNT_WITNESSES))
+	// 	return callbacks.ifError("wrong number of witnesses");
+		
+	var assocKnownStableUnits = {};
+	if (arrKnownStableUnits)
+		arrKnownStableUnits.forEach(function(unit){
+			assocKnownStableUnits[unit] = true;
+		});
+	
+	var objResponse = {};
+
+	// add my joints and proofchain to these joints
+	var arrSelects = [];
+	addSharedAddressesOfWallet(arrAddresses, function(arrAddressesAndSharedAddress){  // Victor ShareAddress
+		if (arrAddressesAndSharedAddress && arrAddressesAndSharedAddress.length > 0){
+			// we don't filter sequence='good' after the unit is stable, so the client will see final doublespends too
+			var strAddressList = arrAddressesAndSharedAddress.map(db.escape).join(', ');
+			arrSelects = ["SELECT DISTINCT unit, sequence, is_stable FROM outputs JOIN units USING(unit) \n\
+				WHERE address IN("+strAddressList+") AND (+sequence='good' OR is_stable=1) \n\
+				UNION \n\
+				SELECT DISTINCT unit, sequence, is_stable FROM unit_authors JOIN units USING(unit) \n\
+				WHERE address IN("+strAddressList+") AND (+sequence='good' OR is_stable=1) \n"];
+		}
+		if (arrRequestedJoints){
+			var strUnitList = arrRequestedJoints.map(db.escape).join(', ');
+			arrSelects.push("SELECT unit, sequence, is_stable FROM units WHERE unit IN("+strUnitList+") AND (+sequence='good' OR is_stable=1) \n");
+		}
+		var sql = arrSelects.join("UNION \n") + "ORDER BY main_chain_index DESC, level DESC";
+		db.query(sql, function(rows){
+			// if no matching units, don't build witness proofs
+			rows = rows.filter(function(row){ return !assocKnownStableUnits[row.unit]; });
+			if (rows.length === 0)
+				return callbacks.ifOk(objResponse);
+			if (rows.length > MAX_HISTORY_ITEMS)
+				return callbacks.ifError("your history is too large, consider switching to a full client");
+
+			objResponse.stable_or_sequence_joints = rows;
+
+			// witnessPowProof.preparePowWitnessProof(
+			// 	0,
+			// 	function( err, arrUnstableMcJoints, last_ball_unit, last_ball_mci )
+			// 	//	POW DEL
+			// 	//function(err, arrUnstableMcJoints, arrWitnessChangeAndDefinitionJoints, last_ball_unit, last_ball_mci)
+			// 	{
+			// 		if (err)
+			// 			return callbacks.ifError(err);
+			// 		objResponse.unstable_mc_joints = arrUnstableMcJoints;
+
+					/**
+					 *	POW DEL
+					 *	@author	XING
+					 */
+					// if (arrWitnessChangeAndDefinitionJoints.length > 0)
+					// 	objResponse.witness_change_and_definition_joints = arrWitnessChangeAndDefinitionJoints;
+
+					// add my joints and proofchain to those joints
+					objResponse.joints = [];
+					// objResponse.proofchain_balls = [];
+					// var later_mci = last_ball_mci+1; // +1 so that last ball itself is included in the chain
+					async.eachSeries(
+						rows,
+						function(row, cb2){
+							storage.readJoint(db, row.unit, {
+								ifNotFound: function(){
+									throw Error("prepareJointsWithProofs unit not found "+row.unit);
+								},
+								ifFound: function(objJoint){
+									objResponse.joints.push(objJoint);
+									cb2();
+									// if (row.main_chain_index > last_ball_mci || row.main_chain_index === null) // unconfirmed, no proofchain
+									// 	return cb2();
+									// buildProofChain(later_mci, row.main_chain_index, row.unit, objResponse.proofchain_balls, function(){
+									// 	later_mci = row.main_chain_index;
+									// 	cb2();
+									// });
+								}
+							});
+						},
+						function(){
+							//if (objResponse.joints.length > 0 && objResponse.proofchain_balls.length === 0)
+							//    throw "no proofs";
+							// if (objResponse.proofchain_balls.length === 0)
+							// 	delete objResponse.proofchain_balls;
+							callbacks.ifOk(objResponse);
+						}
+					);
+			// 	}
+			// );
+		});
+	});
+}
+
+function processPowHistory(objResponse, callbacks){
+	if (!("joints" in objResponse)) // nothing found
+		return callbacks.ifOk();
+	// if (!ValidationUtils.isNonemptyArray(objResponse.unstable_mc_joints))
+	// 	return callbacks.ifError("no unstable_mc_joints");
+	// if (!objResponse.witness_change_and_definition_joints)
+		// objResponse.witness_change_and_definition_joints = [];
+	// if (!Array.isArray(objResponse.witness_change_and_definition_joints))
+	// 	return callbacks.ifError("witness_change_and_definition_joints must be array");
+	if (!ValidationUtils.isNonemptyArray(objResponse.joints))
+		return callbacks.ifError("no joints");
+	if (!ValidationUtils.isNonemptyArray(objResponse.stable_or_sequence_joints))
+		return callbacks.ifError("no stable or sequence joints");
+	// if (!objResponse.proofchain_balls)
+		// objResponse.proofchain_balls = [];
+
+
+	// var assocKnownBalls = {};
+	// for (var unit in assocLastBallByLastBallUnit){
+	// 	var ball = assocLastBallByLastBallUnit[unit];
+	// 	assocKnownBalls[ball] = true;
+	// }
+
+	// proofchain
+	// var assocProvenUnitsNonserialness = {};
+	// for (var i=0; i<objResponse.proofchain_balls.length; i++){
+	// 	var objBall = objResponse.proofchain_balls[i];
+	// 	if (objBall.ball !== objectHash.getBallHash(objBall.unit, objBall.parent_balls, objBall.skiplist_balls, objBall.is_nonserial))
+	// 		return callbacks.ifError("wrong ball hash");
+	// 	if (!assocKnownBalls[objBall.ball])
+	// 		return callbacks.ifError("ball not known");
+	// 	objBall.parent_balls.forEach(function(parent_ball){
+	// 		assocKnownBalls[parent_ball] = true;
+	// 	});
+	// 	if (objBall.skiplist_balls)
+	// 		objBall.skiplist_balls.forEach(function(skiplist_ball){
+	// 			assocKnownBalls[skiplist_ball] = true;
+	// 		});
+	// 	assocProvenUnitsNonserialness[objBall.unit] = objBall.is_nonserial;
+	// }
+	// assocKnownBalls = null; // free memory
+
+	// joints that pay to/from me and joints that I explicitly requested
+	for (var i=0; i<objResponse.joints.length; i++){
+		var objJoint = objResponse.joints[i];
+		var objUnit = objJoint.unit;
+		//if (!objJoint.ball)
+		//    return callbacks.ifError("stable but no ball");
+		if (!validation.hasValidHashes(objJoint))
+			return callbacks.ifError("invalid hash");
+		if (!ValidationUtils.isPositiveInteger(objUnit.timestamp))
+			return callbacks.ifError("no timestamp");
+		// we receive unconfirmed units too
+		//if (!assocProvenUnitsNonserialness[objUnit.unit])
+		//    return callbacks.ifError("proofchain doesn't prove unit "+objUnit.unit);
+	}
+
+	var arrStableUnits = [];
+	var assocSequences = {};
+	for (var i=0; i<objResponse.stable_or_sequence_joints.length; i++){
+		var objUnit = objResponse.stable_or_sequence_joints[i];
+		assocSequences[objUnit.unit] = objUnit.sequence;		
+		if (objUnit.is_stable === 1 )
+			arrStableUnits.push(objUnit.unit);
+	}
+
+	// save joints that pay to/from me and joints that I explicitly requested
+	mutex.lock(["light_joints"], function(unlock){
+		var arrUnits = objResponse.joints.map(function(objJoint){ return objJoint.unit.unit; });
+		breadcrumbs.add('got light_joints for processHistory '+arrUnits.join(', '));
+		db.query("SELECT unit, is_stable FROM units WHERE unit IN("+arrUnits.map(db.escape).join(', ')+")", function(rows){
+			var assocExistingUnits = {};
+			rows.forEach(function(row){
+				assocExistingUnits[row.unit] = true;
+			});
+			// var arrProvenUnits = [];
+			async.eachSeries(
+				objResponse.joints.reverse(), // have them in forward chronological order so that we correctly mark is_spent flag
+				function(objJoint, cb2){
+					var objUnit = objJoint.unit;
+					var unit = objUnit.unit;
+					// assocProvenUnitsNonserialness[unit] is true for non-serials, false for serials, undefined for unstable
+					// var sequence = assocProvenUnitsNonserialness[unit] ? 'final-bad' : 'good';
+					// if (unit in assocProvenUnitsNonserialness)
+					// 	arrProvenUnits.push(unit);
+					var sequence = assocSequences[unit];
+					if (assocExistingUnits[unit]){
+						//if (!assocProvenUnitsNonserialness[objUnit.unit]) // not stable yet
+						//    return cb2();
+						// it can be null!
+						//if (!ValidationUtils.isNonnegativeInteger(objUnit.main_chain_index))
+						//    return cb2("bad main_chain_index in proven unit");
+						db.query(
+							"UPDATE units SET main_chain_index=?, sequence=? WHERE unit=?", 
+							[objUnit.main_chain_index, sequence, unit], 
+							function(){
+								cb2();
+							}
+						);
+					}
+					else
+						writer.saveJoint(objJoint, {sequence: sequence, arrDoubleSpendInputs: [], arrAdditionalQueries: []}, null, cb2);
+				},
+				function(err){
+					breadcrumbs.add('processHistory almost done');
+					if (err){
+						unlock();
+						return callbacks.ifError(err);
+					}
+					fixIsSpentFlagAndInputAddress(function(){
+						if (arrProvenUnits.length === 0){
+							unlock();
+							return callbacks.ifOk();
+						}
+						db.query("UPDATE units SET is_stable=1, is_free=0 WHERE unit IN("+arrStableUnits.map(db.escape).join(', ')+")", function(){
+							unlock();
+							callbacks.ifOk();
+						});
+					});
+				}
+			);
+		});
+	});
+
+		
+}
+
 // fixes is_spent in case units were received out of order
 function fixIsSpentFlag(onDone){
 	db.query(
@@ -727,6 +967,9 @@ function processLinkProofs(arrUnits, arrChain, callbacks){
 
 exports.prepareHistory = prepareHistory;
 exports.processHistory = processHistory;
+exports.preparePowHistory = preparePowHistory;
+exports.processPowHistory = processPowHistory;
+
 exports.prepareLinkProofs = prepareLinkProofs;
 exports.processLinkProofs = processLinkProofs;
 exports.determineIfHaveUnstableJoints = determineIfHaveUnstableJoints;

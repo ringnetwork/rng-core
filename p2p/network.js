@@ -2587,7 +2587,7 @@ function requestProofsOfJoints(arrUnits, onDone) {
 				console.log(response.error);
 				return onDone(response.error);
 			}
-			light.processHistory(response, {
+			light.processPowHistory(response, {
 				ifError: function (err) {
 					sendError(ws, err);
 					onDone(err);
@@ -3475,7 +3475,7 @@ function handleRequest(ws, tag, command, params) {
 			if (ws.bOutbound)
 				return sendErrorResponse(ws, tag, "light clients have to be inbound");
 
-			light.prepareHistory(params,
+			light.preparePowHistory(params,
 				{
 					ifError: function (err) {
 						sendErrorResponse(ws, tag, err);

@@ -156,7 +156,7 @@ function refreshLightClientHistory() {
 				var interval = setInterval(function () { // refresh UI periodically while we are processing history
 					eventBus.emit('maybe_new_transactions');
 				}, 500);
-				light.processHistory(response, {
+				light.processPowHistory(response, {
 					ifError: function (err) {
 						clearInterval(interval);
 						network.sendError(ws, err);
