@@ -440,15 +440,15 @@ function preparePowHistory( historyRequest, callbacks )
 		if (arrAddressesAndSharedAddress && arrAddressesAndSharedAddress.length > 0){
 			// we don't filter sequence='good' after the unit is stable, so the client will see final doublespends too
 			var strAddressList = arrAddressesAndSharedAddress.map(db.escape).join(', ');
-			arrSelects = ["SELECT DISTINCT unit, sequence, is_stable FROM outputs JOIN units USING(unit) \n\
+			arrSelects = ["SELECT DISTINCT unit, sequence, is_stable, main_chain_index, level FROM outputs JOIN units USING(unit) \n\
 				WHERE address IN("+strAddressList+") AND (+sequence='good' OR is_stable=1) \n\
 				UNION \n\
-				SELECT DISTINCT unit, sequence, is_stable FROM unit_authors JOIN units USING(unit) \n\
+				SELECT DISTINCT unit, sequence, is_stable, main_chain_index, level FROM unit_authors JOIN units USING(unit) \n\
 				WHERE address IN("+strAddressList+") AND (+sequence='good' OR is_stable=1) \n"];
 		}
 		if (arrRequestedJoints){
 			var strUnitList = arrRequestedJoints.map(db.escape).join(', ');
-			arrSelects.push("SELECT unit, sequence, is_stable FROM units WHERE unit IN("+strUnitList+") AND (+sequence='good' OR is_stable=1) \n");
+			arrSelects.push("SELECT unit, sequence, is_stable, main_chain_index, level  FROM units WHERE unit IN("+strUnitList+") AND (+sequence='good' OR is_stable=1) \n");
 		}
 		var sql = arrSelects.join("UNION \n") + "ORDER BY main_chain_index DESC, level DESC";
 		db.query(sql, function(rows){
