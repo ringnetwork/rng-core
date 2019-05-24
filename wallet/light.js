@@ -625,10 +625,10 @@ function processPowHistory(objResponse, callbacks){
 						return callbacks.ifError(err);
 					}
 					fixIsSpentFlagAndInputAddress(function(){
-						if (arrProvenUnits.length === 0){
-							unlock();
-							return callbacks.ifOk();
-						}
+						// if (arrProvenUnits.length === 0){
+						// 	unlock();
+						// 	return callbacks.ifOk();
+						// }
 						db.query("UPDATE units SET is_stable=1, is_free=0 WHERE unit IN("+arrStableUnits.map(db.escape).join(', ')+")", function(){
 							unlock();
 							callbacks.ifOk();
