@@ -213,8 +213,8 @@ function prepareHistory( historyRequest, callbacks )
 			rows = rows.filter(function(row){ return !assocKnownStableUnits[row.unit]; });
 			if (rows.length === 0)
 				return callbacks.ifOk(objResponse);
-			if (rows.length > MAX_HISTORY_ITEMS)
-				return callbacks.ifError("your history is too large, consider switching to a full client");
+			// if (rows.length > MAX_HISTORY_ITEMS)
+			// 	return callbacks.ifError("your history is too large, consider switching to a full client");
 
 			witnessPowProof.preparePowWitnessProof(
 				0,
