@@ -457,7 +457,7 @@ function preparePowHistory( historyRequest, callbacks )
 			if (rows.length === 0)
 				return callbacks.ifOk(objResponse);
 			if (rows.length > MAX_HISTORY_ITEMS)
-				return callbacks.ifError("your history is too large, consider switching to a full client");
+				return callbacks.ifError("your history is too large, consider switching to a full client"+","+sql+","+rows.length);
 
 			objResponse.stable_or_sequence_joints = rows;
 
