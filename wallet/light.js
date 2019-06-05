@@ -15,7 +15,7 @@ var parentComposer = require('../unit/parent_composer.js');
 var breadcrumbs = require('../base/breadcrumbs.js');
 var _ = require('lodash');
 
-var MAX_HISTORY_ITEMS = 1000;
+var MAX_HISTORY_ITEMS = 4000;
 
 // unit's MC index is earlier_mci
 function buildProofChain(later_mci, earlier_mci, unit, arrBalls, onDone){
