@@ -135,6 +135,13 @@ function saveJoint(objJoint, objValidationState, preCommitCallback, onDone) {
 						message.app === "pow_equihash" || message.app === "trustme" || message.app === "coinbase")
 					text_payload = JSON.stringify(message.payload);
 				
+				// reward unit
+				if (message.app === "text" && message.payload != null && message.payload.indexOf("DepositReward") === 0 ){
+					conn.addQuery(arrQueries, "INSERT INTO coin_reward_unit (reward_period, address, unit)  \n\
+					VALUES (?, ?, ?)", 
+				   [message.payload.substring(14), objJoint.unit.authors[0].address, objJoint.unit.unit]);
+				}
+					
 				conn.addQuery(arrQueries, "INSERT INTO messages \n\
 					(unit, message_index, app, payload_hash, payload_location, payload, payload_uri, payload_uri_hash) VALUES(?,?,?,?,?,?,?,?)", 
 					[objUnit.unit, i, message.app, message.payload_hash, message.payload_location, text_payload, 
