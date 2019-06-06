@@ -136,10 +136,12 @@ function saveJoint(objJoint, objValidationState, preCommitCallback, onDone) {
 					text_payload = JSON.stringify(message.payload);
 				
 				// reward unit
-				if (message.app === "text" && message.payload != null && message.payload.indexOf("DepositReward") === 0 ){
-					conn.addQuery(arrQueries, "INSERT INTO coin_reward_unit (reward_period, address, unit)  \n\
-					VALUES (?, ?, ?)", 
-				   [message.payload.substring(14), objJoint.unit.authors[0].address, objJoint.unit.unit]);
+				if(conf.bCalculateReward && !conf.bLight){
+					if (message.app === "text" && message.payload != null && message.payload.indexOf("DepositReward") === 0 ){
+						conn.addQuery(arrQueries, "INSERT INTO coin_reward_unit (reward_period, address, unit)  \n\
+						VALUES (?, ?, ?)", 
+						[message.payload.substring(14), objJoint.unit.authors[0].address, objJoint.unit.unit]);
+					}
 				}
 					
 				conn.addQuery(arrQueries, "INSERT INTO messages \n\
