@@ -487,27 +487,29 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
         console.log("byllllogg " + h_p + "-" + p_p + " gossip sKey:" + sKey + " --- sPeerUrl:" + sPeerUrl 
             + " --- gossipMessage:" + JSON.stringify(gossipMessage));
         if(maxGossipHp < gossipMessage.h) { // update max gossip h
-            // console.log("byllllogg maxGossipHp < gossipMessage.h:" + maxGossipHp + gossipMessage.h);
             maxGossipHp = gossipMessage.h;
             maxGossipPp = gossipMessage.p;
         }
         if(gossipMessage.h < h_p){
-            console.log("bylllloggE1 gossipMessage.h < h_p:" + bByzantineUnderWay + h_p);
             return;
         }
         if(last_main_chain_index > 0 && gossipMessage.h < last_main_chain_index)
             return;
         if(!validationUtils.isValidAddress(address_p)){
-            console.log("bylllloggE2 isValidAddress:" + address_p);
             return;    
         }
     
         getGossiperCoordinators(null, gossipMessage.h, gossipMessage.p, function(err, proposer, roundIndex, witnesses){
             try{
                 if(err){
-                    console.log("bylllloggE3 get coordinators err:" + err);
                     return;
                 } 
+                if(witnesses.length !== constants.TOTAL_COORDINATORS){
+                    return;
+                }
+                if(witnesses.indexOf(address_p) === -1){
+                    return;
+                }
                 if(!assocByzantinePhase[gossipMessage.h] || typeof assocByzantinePhase[gossipMessage.h] === 'undefined' 
                 || Object.keys(assocByzantinePhase[gossipMessage.h]).length === 0){
                     assocByzantinePhase[gossipMessage.h] = {};
@@ -536,17 +538,9 @@ eventBus.on('byzantine_gossip', function(sPeerUrl, sKey, gossipMessage ) {
                     }
                     return;
                 }
-                if(witnesses.length !== constants.TOTAL_COORDINATORS){
-                    console.log("bylllloggE4 coordinators count err:" + witnesses.length );
-                    return;
-                }
-                if(witnesses.indexOf(address_p) === -1){
-                    console.log("bylllloggE5 witnesses count err:" + JSON.stringify(witnesses) );
-                    return;
-                }
+            
                 handleGossipMessage(sKey, gossipMessage, function(err){
                     if(err){
-                        console.log("bylllloggE6 handle gossip message err:" + err);
                         return;
                     }
                     if(bByzantineUnderWay)
